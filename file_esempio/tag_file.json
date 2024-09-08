@@ -1,0 +1,44 @@
+[
+  {
+    "file_name": "CR-BK-SuperT.csv",
+    "tags": [
+      "AGRI"
+    ]
+  },
+  {
+    "file_name": "EC-BS-Romulus-Intra.csv",
+    "tags": [
+      "CURR"
+    ]
+  },
+  {
+    "file_name": "EC-MR-Poppy.csv",
+    "tags": [
+      "CURR"
+    ]
+  },
+  {
+    "file_name": "NQ-BK-War3.csv",
+    "tags": [
+      "INDEX"
+    ]
+  },
+  {
+    "file_name": "SY-BS-Paris-UnFil.csv",
+    "tags": [
+      "AGRI"
+    ]
+  },
+  {
+    "file_name": "GC-BS-Og5-Intra.csv",
+    "tags": [
+      "METALS"
+    ]
+  },
+  {
+    "file_name": "CL-BS-Romulus-Intra.csv",
+    "tags": [
+      "ENERGY"
+    ]
+  }
+]

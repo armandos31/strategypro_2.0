@@ -1,0 +1,18 @@
+cookie:
+  expiry_days: 1
+  key: some_signature_key
+  name: some_cookie_name
+credentials:
+  usernames:
+    armandinodinodello:
+      email: armando.loconte95@gmail.com
+      logged_in: false
+      name: armandinodinodello
+      password: $2b$12$Vffcn2.3q7bfWckqca9Xj.9nu74.ISY8Q6trNSGTRvspcuGwWSfzC
+    testing:
+      email: forseller4you@gmail.com
+      logged_in: false
+      name: testing
+      password: $2b$12$HAzWxrdYQ3wfUbQPXXrcZeGHWcT6L56zQHUAk12yRrJXFEZzBUXsm
+preauthorized:
+  emails: []
