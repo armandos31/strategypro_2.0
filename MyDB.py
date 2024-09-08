@@ -5,8 +5,6 @@ import pandas as pd
 import shutil
 
 class MyDB:
-    _example_files_dir = 'file_esempio'
-    _example_paramenter_file = 'opt_report.txt'
     _save_directory = ''
     _tag_file_name = "tag_file.json"
     _symbol_list_file_name = 'symbol_list.csv'
@@ -16,32 +14,13 @@ class MyDB:
     _symbol_list_path = ''
     _symbol_list_columns = ['Symbol Name', 'Overnight Margin', 'Markets']
 
-    def __init__(self, user_id, isGuest) -> None:
+
+    def __init__(self, user_id) -> None:
         self._user_id = user_id
-        if isGuest:
-            self._user_path = self._example_files_dir
-        else:
-            self._save_directory = 'users'
-            self._user_path = os.path.join(self._save_directory, user_id)
-        if not os.path.exists(self._user_path):
-            os.makedirs(self._user_path)
+        self._save_directory = 'users'
+        self._user_path = os.path.join(self._save_directory, user_id)
         self._tag_file_path = os.path.join(self._user_path, self._tag_file_name)
-        if not os.path.exists(self._tag_file_path):
-            with open(self._tag_file_path, 'w') as file:
-                empty_list = []
-                json.dump(empty_list, file)
         self._symbol_list_path = os.path.join(self._user_path, self._symbol_list_file_name)
-        if not os.path.exists(self._symbol_list_path):
-            symbol_df = pd.DataFrame(columns=self._symbol_list_columns)
-            symbol_df[self._symbol_list_columns[0]] = symbol_df[self._symbol_list_columns[0]].astype(str)
-            symbol_df[self._symbol_list_columns[1]] = symbol_df[self._symbol_list_columns[1]].astype(int)
-            symbol_df[self._symbol_list_columns[2]] = symbol_df[self._symbol_list_columns[2]].astype(str)
-            symbol_df[self._symbol_list_columns[0]] = ["@ES"]
-            symbol_df[self._symbol_list_columns[1]] = [2500]
-            symbol_df[self._symbol_list_columns[2]] = ["index"]
-            symbol_df.to_csv(self._symbol_list_path, header=False, index=False)
-
-
 
     # Se esiste un file con lo stesso nome, questo viene sostituito da quello nuovo
     def insert_file(self, report) -> None:
@@ -132,7 +111,6 @@ class MyDB:
                 report_file_path = os.path.join(self._user_path, report_name)
                 if os.path.exists(report_file_path):
                     try:
-                        #print('Report trovato, lo elimino')
                         os.remove(report_file_path)
                         with open(self._tag_file_path, 'r') as file:
                             tag_file_content = json.load(file)
@@ -143,7 +121,7 @@ class MyDB:
                             with open(self._tag_file_path, 'w') as file:
                                 json.dump(tag_file_content, file, indent=2)
                     except OSError:
-                        print('Report non trovato')
+                        print('Report not found')
 
     def get_numeber_report(self) -> int:
         with open(self._tag_file_path, 'r') as file:
@@ -154,25 +132,23 @@ class MyDB:
         return pd.read_csv(self._symbol_list_path, header=None, names=self._symbol_list_columns, dtype={self._symbol_list_columns[0]:str, self._symbol_list_columns[1]: int, self._symbol_list_columns[2]: str})
     
     def save_symbol_list(self, symbol_df):
-        # symbol_df = symbol_df.dropna()
         symbol_df = symbol_df.fillna({
             self._symbol_list_columns[0]: '',
-            self._symbol_list_columns[1]: 0,   # Riempi le celle vuote nella colonna di interi con 0
+            self._symbol_list_columns[1]: 0,  
             self._symbol_list_columns[2]: ''
         })
         symbol_df.to_csv(self._symbol_list_path, header=False, index=False)
 
+    # REPO MANAGER, STRATEGYPRO, COMPARATOR
     def get_df_report(self, report_name):
         report_path = os.path.join(self._user_path, report_name)
         df = pd.read_csv(report_path, header=None)
         return df
     
-    def get_example_paramenter_file(self):
-        p_path = os.path.join(self._user_path, self._example_paramenter_file)
-        df = pd.read_csv(p_path, encoding="utf-16", sep='\t')
-        return df
-
+    ### FOLIO MANAGER
     def get_df_report2(self, report_name):
         report_path = os.path.join(self._user_path, report_name)
         df = pd.read_csv(report_path, header=None, nrows=1)
         return df
+
+    

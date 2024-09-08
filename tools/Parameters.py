@@ -12,26 +12,23 @@ from MyDB import MyDB
 
 def app():
     df = pd.DataFrame()
-    if st.session_state['isGuest']:
-        myDB = MyDB('', st.session_state['isGuest'])
-        df = myDB.get_example_paramenter_file()
-    else:
-        file_list = []
-        uploaded_file = st.file_uploader(label = "Select or drag one or more files to upload",
-                                            accept_multiple_files = True, type = ["txt"])
-        if uploaded_file:
+    
+    file_list = []
+    uploaded_file = st.file_uploader(label = "Select or drag one or more files to upload",
+                                        accept_multiple_files = True, type = ["txt"])
+    if uploaded_file:
+        for file in uploaded_file:
+            file_list.append(file.name)
+    selected_file = st.selectbox("Select optimization report", file_list)
+    if selected_file:
+        try:
             for file in uploaded_file:
-                file_list.append(file.name)
-        selected_file = st.selectbox("Select optimization report", file_list)
-        if selected_file:
-            try:
-                for file in uploaded_file:
-                    if file.name == selected_file:
-                        df = pd.read_csv(file, encoding="utf-16", sep='\t')
-                        break
-            except:
-                    st.error("Sorry, something went wrong") 
-                    st.stop() 
+                if file.name == selected_file:
+                    df = pd.read_csv(file, encoding="utf-16", sep='\t')
+                    break
+        except:
+                st.error("Sorry, something went wrong") 
+                st.stop() 
 
     if df.empty != True:
         grafico = option_menu(

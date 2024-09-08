@@ -8,12 +8,7 @@ def app():
     if 'isExpandedC' not in st.session_state:
         st.session_state['isExpandedC'] = True
     
-    if st.session_state['isGuest']:
-        user_id = ''
-    else:
-        user_id = st.session_state['username']
-
-    myDB = MyDB(user_id, st.session_state['isGuest'])
+    myDB = MyDB('armandinodinodello')
 
     with st.expander("Comparator Dashboard", expanded=st.session_state['isExpandedC']):
         if 'df_report_not_selected_comparator' not in st.session_state:

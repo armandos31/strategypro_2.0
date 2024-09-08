@@ -9,16 +9,11 @@ def app():
     if 'isExpandedFM' not in st.session_state:
         st.session_state['isExpandedFM'] = True
         
-    if st.session_state['isGuest']:
-        user_id = ''
-    else:
-        user_id = st.session_state['username']
-        
-    myDB = MyDB(user_id, st.session_state['isGuest'])
+    myDB = MyDB('armandinodinodello')
     symbol_df = myDB.get_symbol_list()
 
-    if user_id == 'armandinodinodello':
-         with st.expander("Folio Dashboard", expanded=st.session_state['isExpandedFM']):
+    #if user_id == 'armandinodinodello':
+    with st.expander("Folio Dashboard", expanded=st.session_state['isExpandedFM']):
             if 'df_report_not_selected_folioManager' not in st.session_state:
                 tag_file_content = myDB.get_tag_file()
                 reports_names = [entry['file_name'] for entry in tag_file_content]
@@ -78,7 +73,7 @@ def app():
 
 
 
-         if 'df_report_to_compare' in st.session_state and len(st.session_state['df_report_to_compare']) > 0:
+    if 'df_report_to_compare' in st.session_state and len(st.session_state['df_report_to_compare']) > 0:
 
             data = []
             for report_name in st.session_state['df_report_to_compare']:
@@ -436,7 +431,3 @@ def app():
 
 
 
-
-    
-    else:
-        st.error("In development")

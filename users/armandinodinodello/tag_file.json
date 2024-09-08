@@ -1,7 +1,9 @@
 [
   {
     "file_name": "SY-BS-Paris-UnFil.csv",
-    "tags": []
+    "tags": [
+      "AGRI"
+    ]
   },
   {
     "file_name": "NQ-BK-War3.csv",
@@ -25,34 +27,6 @@
   },
   {
     "file_name": "CR-BK-SuperT.csv",
-    "tags": []
-  },
-  {
-    "file_name": "rabbit_atg_flipper_v1.csv",
-    "tags": []
-  },
-  {
-    "file_name": "rabbit_ATG_GOLD_DUAL_MOMO.csv",
-    "tags": []
-  },
-  {
-    "file_name": "rabbit_ATG_GOLD_KELTNER.csv",
-    "tags": []
-  },
-  {
-    "file_name": "rabbit_ATG_GOLD_TRENDCHANNEL.csv",
-    "tags": []
-  },
-  {
-    "file_name": "rabbit_ATG_GOLD_UPTREND.csv",
-    "tags": []
-  },
-  {
-    "file_name": "rabbit_ATG_HIGHER_HIGH.csv",
-    "tags": []
-  },
-  {
-    "file_name": "rabbit_atg_median_gold.csv",
     "tags": []
   }
 ]

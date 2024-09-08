@@ -10,12 +10,7 @@ def app():
     if 'isExpandedSP' not in st.session_state:
         st.session_state['isExpandedSP'] = True
     
-    if st.session_state['isGuest']:
-        user_id = ''
-    else:
-        user_id = st.session_state['username']
-        
-    myDB = MyDB(user_id, st.session_state['isGuest'])
+    myDB = MyDB('armandinodinodello')
 
     symbol_df = myDB.get_symbol_list()
     symbol_map = symbol_df.set_index('Symbol Name')['Markets'].to_dict()
