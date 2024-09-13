@@ -1,24 +1,138 @@
 [
   {
-    "file_name": "SY-BS-Paris-UnFil.csv",
-    "tags": [
-      "AGRI"
-    ]
-  },
-  {
-    "file_name": "NQ-BK-War3.csv",
+    "file_name": "AD-BK-Ago-Intra.csv",
     "tags": []
   },
   {
-    "file_name": "GC-BS-Og5-Intra.csv",
+    "file_name": "AD-BK-SuperT.csv",
     "tags": []
   },
   {
-    "file_name": "EC-BS-Romulus-Intra.csv",
+    "file_name": "AD-BS-Romulus-Intra.csv",
     "tags": []
   },
   {
-    "file_name": "EC-MR-Poppy.csv",
+    "file_name": "AD-BS-Romulus-oS.csv",
+    "tags": []
+  },
+  {
+    "file_name": "AD-HY-Volm-MultiD.csv",
+    "tags": []
+  },
+  {
+    "file_name": "AD-MR-Lux.csv",
+    "tags": []
+  },
+  {
+    "file_name": "AD-MR-OpenI.csv",
+    "tags": []
+  },
+  {
+    "file_name": "AD-MR-SuperT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "AD-TF-Cottage-COT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "BP-BK-SuperT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "BP-BS-Eyes.csv",
+    "tags": []
+  },
+  {
+    "file_name": "BP-BS-Fortune.csv",
+    "tags": []
+  },
+  {
+    "file_name": "BP-BS-Resistence-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "BP-BS-Romulus-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "BP-BS-Romulus.csv",
+    "tags": []
+  },
+  {
+    "file_name": "BP-BS-Usa-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "BP-HY-Volm.csv",
+    "tags": []
+  },
+  {
+    "file_name": "BP-MR-OpenI.csv",
+    "tags": []
+  },
+  {
+    "file_name": "BP-MR-Resonance-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "BP-TF-Cottage-COT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BK-Ago-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BK-Herbf.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BK-Larry.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BK-OpenI.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BK-Rome.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BK-SuperT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BK-Tram.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BK-Venom.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BS-Cicciolina-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BS-CicciolinaV2-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BS-CicciolinaV3-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BS-CicciolinaV4-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BS-Godzilla-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BS-Pelu.csv",
     "tags": []
   },
   {
@@ -26,7 +140,731 @@
     "tags": []
   },
   {
+    "file_name": "CL-BS-Voltaire.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BS-Voltaire2.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-BS-Voltaire3.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-HY-Volm-MultiD.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-HY-Volm.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-MR-SuperT-480.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-TF-Consuele.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-TF-Cottage-COT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-TF-Ferroust-COT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-TF-Ferroust2-COT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-TF-Lux.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-TF-Partner.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-TF-Poli-COT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CL-TF-SuperT120.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CR-BK-Lux.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CR-BK-Orient.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CR-BK-Pippa.csv",
+    "tags": []
+  },
+  {
     "file_name": "CR-BK-SuperT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CR-BS-Romulus.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CR-HY-Ptn.csv",
+    "tags": []
+  },
+  {
+    "file_name": "CR-MR-OpenI.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-BK-LiveAlone.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-BK-Soul.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-BK-Venom-60.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-BK-Venom-240.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-BK-Venom-480.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-BS-Kay.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-BS-Paris.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-BS-Pos.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-BS-Romulus-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-BS-Ruth-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-BS-Ruth2-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-HY-Ptn.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-HY-Volm-MultiD.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-MR-Larry.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-MR-Lux-v2.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-MR-Lux.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-MR-OpenI.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-MR-Poppy.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-MR-Pullen.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-MR-PullenV2.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-MR-SuperT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "EC-TF-Cottage-COT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-BK-Aberration-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-BK-Orient-30.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-BK-SuperT-240.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-BK-Venom-240.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-BS-Apex.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-BS-Usa-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-HY-OpenI.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-HY-Volm-MultiD.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-HY-Volm.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-IM-Bondage-US.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-MR-Angel.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-MR-Blasco.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-MR-Lux.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-MR-NewYear.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-MR-OpenI.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-MR-Orient-120.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-MR-Ptn.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-MR-Sars.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-MR-Squat.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-MR-SuperT-60.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-MR-Venom-60.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-MR-Venom-120.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-TF-Cottage-COT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-TF-Oronero.csv",
+    "tags": []
+  },
+  {
+    "file_name": "ES-TF-Poli-COT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BK-OpenI.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BK-Rome.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BK-SuperT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BK-Tram.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BK-Venom.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BS-Cycle.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BS-CycleV2.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BS-CycleV3.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BS-Gigo.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BS-Mastro-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BS-Og1-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BS-Og2-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BS-Og3-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BS-Og4-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BS-Og5-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BS-Og6-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BS-Romulus-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-BS-Usa-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-HY-Volm.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-IM-Carl-EC.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-IM-Rich-EC.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-MR-Larry.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-MR-LarryV2.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-MR-LarryV3.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-MR-Mosca-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-TF-Cottage-COT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-TF-Ferroust-COT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-TF-Freda.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-TF-Lux.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-TF-Poli-COT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-TF-Spritz-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "GC-TF-SuperT-MultiD.csv",
+    "tags": []
+  },
+  {
+    "file_name": "HG-BK-OpenI.csv",
+    "tags": []
+  },
+  {
+    "file_name": "HG-BK-Pollon.csv",
+    "tags": []
+  },
+  {
+    "file_name": "HG-BS-Gigo.csv",
+    "tags": []
+  },
+  {
+    "file_name": "HG-BS-Romulus.csv",
+    "tags": []
+  },
+  {
+    "file_name": "HG-MR-Ptn.csv",
+    "tags": []
+  },
+  {
+    "file_name": "HG-MR-SuperT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-BK-Aberration.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-BK-Larry.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-BK-Ptn-12.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-BK-Rome.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-BK-War3.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-BS-Romulus.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-HY-Volm-MultiD.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-MR-Bojack.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-MR-OpenI.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-MR-Ptn-5.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-MR-Ptn-8.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-MR-Ptn-9.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-MR-Ptn-22.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-TF-Free-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-TF-Lux.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-TF-Mef.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-TF-Oronero.csv",
+    "tags": []
+  },
+  {
+    "file_name": "NQ-TF-Poli-COT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BK-550.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BK-Aberration.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BK-LiveAlone.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BK-LiveAloneV2.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BK-LiveAloneV3.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BK-Orient-120.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BK-Rome.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BK-SuperT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BK-Tonino.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BK-Tram.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BK-Venom.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BK-War3.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BS-Kali.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BS-Paris-Fil.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BS-Paris-UnFil.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BS-Romulus-Fil.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BS-Romulus-UnFil.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-BS-Usa-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-HY-OpenI.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-HY-Ptn.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-HY-Volm-MultiD.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-HY-Volm.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-MR-Polase-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-TF-Ferroust-COT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-TF-Lux-Vol.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-TF-Lux.csv",
+    "tags": []
+  },
+  {
+    "file_name": "SY-TF-ToninoV2.csv",
+    "tags": []
+  },
+  {
+    "file_name": "VX-BK-Ago-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "VX-BK-Orient-30.csv",
+    "tags": []
+  },
+  {
+    "file_name": "VX-BS-Romulus.csv",
+    "tags": []
+  },
+  {
+    "file_name": "VX-BS-Usa-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "VX-HY-Ptn.csv",
+    "tags": []
+  },
+  {
+    "file_name": "VX-HY-Volm-MultiD.csv",
+    "tags": []
+  },
+  {
+    "file_name": "VX-HY-Volm.csv",
+    "tags": []
+  },
+  {
+    "file_name": "VX-MR-Lux.csv",
+    "tags": []
+  },
+  {
+    "file_name": "VX-MR-OpenI.csv",
+    "tags": []
+  },
+  {
+    "file_name": "VX-MR-SuperT-Dayli.csv",
+    "tags": []
+  },
+  {
+    "file_name": "VX-MR-SuperT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "VX-MR-Venom.csv",
+    "tags": []
+  },
+  {
+    "file_name": "W-BK-550.csv",
+    "tags": []
+  },
+  {
+    "file_name": "W-BK-SuperT.csv",
+    "tags": []
+  },
+  {
+    "file_name": "W-BK-Tram.csv",
+    "tags": []
+  },
+  {
+    "file_name": "W-BK-Venom.csv",
+    "tags": []
+  },
+  {
+    "file_name": "W-BS-Kali.csv",
+    "tags": []
+  },
+  {
+    "file_name": "W-BS-Paris-Fil.csv",
+    "tags": []
+  },
+  {
+    "file_name": "W-BS-Romulus.csv",
+    "tags": []
+  },
+  {
+    "file_name": "W-BS-Usa-Intra.csv",
+    "tags": []
+  },
+  {
+    "file_name": "W-HY-OpenI.csv",
+    "tags": []
+  },
+  {
+    "file_name": "W-HY-Ptn.csv",
+    "tags": []
+  },
+  {
+    "file_name": "W-HY-Volm-MultiD.csv",
+    "tags": []
+  },
+  {
+    "file_name": "W-TF-Lux.csv",
+    "tags": []
+  },
+  {
+    "file_name": "YM-BK-OpenI-240.csv",
+    "tags": []
+  },
+  {
+    "file_name": "YM-BS-Romulus.csv",
+    "tags": []
+  },
+  {
+    "file_name": "YM-HY-Lux.csv",
+    "tags": []
+  },
+  {
+    "file_name": "YM-HY-PTN.csv",
+    "tags": []
+  },
+  {
+    "file_name": "YM-HY-Volm-MultiD.csv",
+    "tags": []
+  },
+  {
+    "file_name": "YM-HY-Volm.csv",
+    "tags": []
+  },
+  {
+    "file_name": "YM-MR-OpenI.csv",
     "tags": []
   }
 ]

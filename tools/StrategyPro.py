@@ -671,11 +671,8 @@ def app():
             
             col1, col2, col3 = st.columns(3)
             with col1: selected_categories = st.selectbox("Control By:", categories)
-            with col2: 
-                if st.session_state['user_authorized']:
-                    lenMa = st.number_input('SMA length', min_value=10, max_value=200, value=50, step=10)
-                else: 
-                    lenMa = st.number_input('SMA length', min_value=10, max_value=10, value=10, step=10)
+            with col2: lenMa = st.number_input('SMA length', min_value=10, max_value=200, value=50, step=10)
+
 
             if selected_categories == "Sma":
                 df['Control curve'] = df['Original Equity'].rolling(window=lenMa).mean() # curva di controllo
@@ -687,9 +684,8 @@ def app():
 
             elif selected_categories == "BB Low":
                 with col3: 
-                    if st.session_state['user_authorized']: lennDev = st.number_input('DEV length', min_value=1, max_value=5, value=2, step=1)
-                    else: lennDev = st.number_input('DEV length', min_value=1, max_value=1, value=1, step=1)
-              
+                    lennDev = st.number_input('DEV length', min_value=1, max_value=5, value=2, step=1)
+
                     df['SMA'] = df['Original Equity'].rolling(window=lenMa).mean() # sma
                     df['STD'] = df['Original Equity'].rolling(window=lenMa).std() # std
                     df['Control curve'] = df['SMA'] - lennDev * df['STD']
@@ -702,8 +698,7 @@ def app():
 
             else: 
                 with col3: 
-                    if st.session_state['user_authorized']: moltiplicatore = st.number_input('Num Contracts', min_value=1, max_value=10, value=2, step=1)
-                    else: moltiplicatore = st.number_input('Num Contracts', min_value=1, max_value=1, value=1, step=1)
+                    moltiplicatore = st.number_input('Num Contracts', min_value=1, max_value=10, value=2, step=1)
 
                     df['Control curve'] = df['Original Equity'].rolling(window=lenMa).mean() # sma
                     df['Control'] = df.apply(lambda row: 0 if pd.isna(row['Control curve']) or row['Original Equity'] > row['Control curve'] else 1, axis=1)
@@ -772,14 +767,10 @@ def app():
             equity = df['Profit/Loss'].cumsum()
 
             col1, col2, col3 = st.columns(3)
-            if st.session_state['user_authorized']:
-                with col1: num_simulations = st.number_input('Number of Simulations', min_value=5, max_value=500, value=10, step=10)
-                with col2: num_future_trades = st.number_input('Number of future Operations', min_value=10, max_value=500, value=100, step=20)
-                with col3: fun_montecarlo = st.radio("Montecarlo Type",["Randomized Only", "Randomize Returns Variate"] )
-            else:
-                with col1: num_simulations = st.number_input('Number of Simulations', min_value=10, max_value=10, value=10, step=10)
-                with col2: num_future_trades = st.number_input('Number of future Operations', min_value=10, max_value=10, value=10, step=10)
-                with col3: fun_montecarlo = st.radio("Montecarlo Type",["Randomized Only", "Randomize Returns Variate"] )
+
+            with col1: num_simulations = st.number_input('Number of Simulations', min_value=5, max_value=500, value=10, step=10)
+            with col2: num_future_trades = st.number_input('Number of future Operations', min_value=10, max_value=500, value=100, step=20)
+            with col3: fun_montecarlo = st.radio("Montecarlo Type",["Randomized Only", "Randomize Returns Variate"] )
 
             tab_Montecarlo, tab_Simulation = st.tabs(["Montecarlo", "Simulation"])
 
