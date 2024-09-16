@@ -12,17 +12,16 @@ def app():
     myDB = MyDB('armandinodinodello')
     symbol_df = myDB.get_symbol_list()
 
-
+    #if user_id == 'armandinodinodello':
     with st.expander("Folio Dashboard", expanded=st.session_state['isExpandedFM']):
-        
-        if 'df_report_not_selected_folioManager' not in st.session_state:
-            tag_file_content = myDB.get_tag_file()
-            reports_names = [entry['file_name'] for entry in tag_file_content]
-            reports_tags = [" ".join(entry['tags']) for entry in tag_file_content]
-            st.session_state['df_report_not_selected_folioManager'] = pd.DataFrame({"Report Names":reports_names, "Tags":reports_tags})
+            if 'df_report_not_selected_folioManager' not in st.session_state:
+                tag_file_content = myDB.get_tag_file()
+                reports_names = [entry['file_name'] for entry in tag_file_content]
+                reports_tags = [" ".join(entry['tags']) for entry in tag_file_content]
+                st.session_state['df_report_not_selected_folioManager'] = pd.DataFrame({"Report Names":reports_names, "Tags":reports_tags})
 
-        if 'df_report_selected_folioManager' not in st.session_state:
-            st.session_state['df_report_selected_folioManager'] = pd.DataFrame({"Report Names": [], "Tags": []})
+            if 'df_report_selected_folioManager' not in st.session_state:
+                st.session_state['df_report_selected_folioManager'] = pd.DataFrame({"Report Names": [], "Tags": []})
 
             # Search Bar & Radio Btn ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             col1, col2 = st.columns(2)
