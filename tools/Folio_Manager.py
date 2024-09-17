@@ -1,5 +1,6 @@
 import streamlit as st
 from MyDB import MyDB
+from collections import defaultdict
 from function import *
 from graphs import *
 from streamlit_option_menu import option_menu
@@ -14,221 +15,217 @@ def app():
 
     #if user_id == 'armandinodinodello':
     with st.expander("Folio Dashboard", expanded=st.session_state['isExpandedFM']):
-            if 'df_report_not_selected_folioManager' not in st.session_state:
-                tag_file_content = myDB.get_tag_file()
-                reports_names = [entry['file_name'] for entry in tag_file_content]
-                reports_tags = [" ".join(entry['tags']) for entry in tag_file_content]
-                st.session_state['df_report_not_selected_folioManager'] = pd.DataFrame({"Report Names":reports_names, "Tags":reports_tags})
+        if 'df_report_not_selected_folioManager' not in st.session_state:
+            tag_file_content = myDB.get_tag_file()
+            reports_names = [entry['file_name'] for entry in tag_file_content]
+            reports_tags = [" ".join(entry['tags']) for entry in tag_file_content]
+            st.session_state['df_report_not_selected_folioManager'] = pd.DataFrame({"Report Names":reports_names, "Tags":reports_tags})
 
-            if 'df_report_selected_folioManager' not in st.session_state:
-                st.session_state['df_report_selected_folioManager'] = pd.DataFrame({"Report Names": [], "Tags": []})
+        if 'df_report_selected_folioManager' not in st.session_state:
+            st.session_state['df_report_selected_folioManager'] = pd.DataFrame({"Report Names": [], "Tags": []})
 
-            # Search Bar & Radio Btn ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            col1, col2 = st.columns(2)
-            with col1:
-                cerca = st.multiselect('Select the reports to analyze', st.session_state['df_report_not_selected_folioManager'])
-                query = st.text_input("Select Report to Compare")
-                genre = st.radio( "FIlter bye", ["Name", "Tag"], index=0)    
-                # Listener Search Bar ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                # & All Report Table ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                if query:
-                    filter = 'Report Names' if (genre == 'Name') else 'Tags'
-                    df_filtered = st.session_state['df_report_not_selected_folioManager'][st.session_state['df_report_not_selected_folioManager'][filter].str.contains(query, case=False)]
-                    st.dataframe(df_filtered)
-                elif cerca:
-                    df_filtered = st.session_state['df_report_not_selected_folioManager'][st.session_state['df_report_not_selected_folioManager']['Report Names'].isin(cerca)]
-                    st.dataframe(df_filtered)
-                else:
-                    df_filtered = st.session_state['df_report_not_selected_folioManager']
-                    st.dataframe(st.session_state['df_report_not_selected_folioManager'])
+        # Search Bar & Radio Btn ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        col1, col2 = st.columns(2)
+        with col1:
+            cerca = st.multiselect('Select the reports to analyze', st.session_state['df_report_not_selected_folioManager'])
+            query = st.text_input("Select Report to Compare")
+            genre = st.radio( "FIlter bye", ["Name", "Tag"], index=0)    
+            # Listener Search Bar ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            # & All Report Table ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            if query:
+                filter = 'Report Names' if (genre == 'Name') else 'Tags'
+                df_filtered = st.session_state['df_report_not_selected_folioManager'][st.session_state['df_report_not_selected_folioManager'][filter].str.contains(query, case=False)]
+                st.dataframe(df_filtered)
+            elif cerca:
+                df_filtered = st.session_state['df_report_not_selected_folioManager'][st.session_state['df_report_not_selected_folioManager']['Report Names'].isin(cerca)]
+                st.dataframe(df_filtered)
+            else:
+                df_filtered = st.session_state['df_report_not_selected_folioManager']
+                st.dataframe(st.session_state['df_report_not_selected_folioManager'])
 
-                # Select Report Btn ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                if st.button("Select", use_container_width=True):
-                    st.session_state['df_report_selected_folioManager'] = pd.concat([st.session_state['df_report_selected_folioManager'], df_filtered], axis=0)
-                    st.session_state['df_report_not_selected_folioManager'] = pd.merge(st.session_state['df_report_not_selected_folioManager'], df_filtered, how='outer', indicator=True).query('_merge == "left_only"').drop('_merge', axis=1)
-                    st.session_state['isExpandedC'] = True
+            # Select Report Btn ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            if st.button("Select", use_container_width=True):
+                st.session_state['df_report_selected_folioManager'] = pd.concat([st.session_state['df_report_selected_folioManager'], df_filtered], axis=0)
+                st.session_state['df_report_not_selected_folioManager'] = pd.merge(st.session_state['df_report_not_selected_folioManager'], df_filtered, how='outer', indicator=True).query('_merge == "left_only"').drop('_merge', axis=1)
+                st.session_state['isExpandedC'] = True
+                st.rerun()
+
+        # Selected Report Table ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        with col2:
+            st.text("Selected Reports")
+            st.dataframe(st.session_state['df_report_selected_folioManager'])
+            pul1, pul2 = st.columns(2)
+            with pul1:
+                if st.button('Empty', use_container_width=True):
+                    del st.session_state['df_report_selected_folioManager']
+                    del st.session_state['df_report_not_selected_folioManager']
+                    if 'df_report_to_compare' in st.session_state:
+                        del st.session_state['df_report_to_compare']
                     st.rerun()
 
-            # Selected Report Table ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            with col2:
-                st.text("Selected Reports")
-                st.dataframe(st.session_state['df_report_selected_folioManager'])
-                pul1, pul2 = st.columns(2)
-                with pul1:
-                    if st.button('Empty', use_container_width=True):
-                        del st.session_state['df_report_selected_folioManager']
-                        del st.session_state['df_report_not_selected_folioManager']
-                        if 'df_report_to_compare' in st.session_state:
-                            del st.session_state['df_report_to_compare']
+            with pul2:
+                if st.button('Compare', use_container_width=True):
+                    if not st.session_state['df_report_selected_folioManager'].empty:
+                        st.session_state['df_report_to_compare'] = st.session_state['df_report_selected_folioManager']['Report Names'].to_numpy()
+                        st.session_state['isExpandedFM'] = False
                         st.rerun()
-
-                with pul2:
-                    if st.button('Compare', use_container_width=True):
-                        if not st.session_state['df_report_selected_folioManager'].empty:
-                            st.session_state['df_report_to_compare'] = st.session_state['df_report_selected_folioManager']['Report Names'].to_numpy()
-                            st.session_state['isExpandedFM'] = False
-                            st.rerun()
-                        else:
-                            st.warning('Error!')
+                    else:
+                        st.warning('Error!')
 
 
 
     if 'df_report_to_compare' in st.session_state and len(st.session_state['df_report_to_compare']) > 0:
 
-            data = []
-            for report_name in st.session_state['df_report_to_compare']:
-                df_symbol = myDB.get_df_report2(report_name)
+        data = []
+        for report_name in st.session_state['df_report_to_compare']:
+            df_symbol = myDB.get_df_report2(report_name)
 
-                symbol = df_symbol.iloc[0, 4]
-                matching_row = symbol_df[symbol_df.iloc[:, 0] == symbol]
+            symbol = df_symbol.iloc[0, 4]
+            matching_row = symbol_df[symbol_df.iloc[:, 0] == symbol]
 
-                if not matching_row.empty:
-                    data.append({'Strategy': report_name, 'Symbol': symbol, **matching_row.iloc[0, 1:].to_dict()})
+            if not matching_row.empty:
+                data.append({'Strategy': report_name, 'Symbol': symbol, **matching_row.iloc[0, 1:].to_dict()})
 
-                
-
-            df_symbol = pd.DataFrame(data)
-
-
-
-
-
-            app = option_menu(
-                menu_title=None,
-                options=['Rotational'],
-                icons=[' '],
-                menu_icon='chat-text-fill',
-                orientation="horizontal",
-                default_index=0,
-                styles={
-                    "container": {"padding": "20!important"},
-                    "icon": {"color": "orange", "font-size": "25px"}, 
-                    "nav-link": {"font-size": "20px", "text-align": "center", "margin":"1px"},
-                }
-                )
             
-            if app == "Rotational":
-                
-                # CREO DIZIONARIO X OGNI STRATEGIA CON NET PROFIT, MAX DD, SYMBOLO E MERCATO PER FINESTRA TEMPORALE SCELTA
-                def create_rotational_dictionary(file_list, df_symbol, window,  myDB):
-                    portfolio_history = defaultdict(dict)
-                    for file in file_list:
-                        df_raw_report = myDB.get_df_report(file)
-                        df_single = prepare_df_comparator(df_raw_report)
-                        netProfits = df_single.resample(window)['Profit/Loss'].sum().astype("int32")
-                        max_drawdowns = df_single.resample(window)['Drawdown'].max()
-                        retOnAcc = ((netProfits / max_drawdowns) * 100)
+
+        df_symbol = pd.DataFrame(data)
+
+
+
+
+
+        app = option_menu(
+            menu_title=None,
+            options=['Rotational'],
+            icons=[' '],
+            menu_icon='chat-text-fill',
+            orientation="horizontal",
+            default_index=0,
+            styles={
+                "container": {"padding": "20!important"},
+                "icon": {"color": "orange", "font-size": "25px"}, 
+                "nav-link": {"font-size": "20px", "text-align": "center", "margin":"1px"},
+            }
+            )
+        
+        if app == "Rotational":
+            
+            # CREO DIZIONARIO X OGNI STRATEGIA CON NET PROFIT, MAX DD, SYMBOLO E MERCATO PER FINESTRA TEMPORALE SCELTA
+            def create_rotational_dictionary(file_list, df_symbol, window,  myDB):
+                portfolio_history = defaultdict(dict)
+                for file in file_list:
+                    df_raw_report = myDB.get_df_report(file)
+                    df_single = prepare_df_comparator(df_raw_report)
+                    netProfits = df_single.resample(window)['Profit/Loss'].sum().astype("int32")
+                    max_drawdowns = df_single.resample(window)['Drawdown'].max()
+                    retOnAcc = ((netProfits / max_drawdowns) * 100)
+                    
+                    for date, profit in netProfits.items():
+                        drawdown = max_drawdowns.loc[date]
+                        returnonAccount = profit if drawdown == 0 else retOnAcc.loc[date]
+                        strategy = os.path.basename(file)
+                        portfolio_history[date][strategy] = {'Net Profit': profit, 'Drawdown': drawdown, 'Return On Account': returnonAccount}
                         
-                        for date, profit in netProfits.items():
-                            drawdown = max_drawdowns.loc[date]
-                            returnonAccount = profit if drawdown == 0 else retOnAcc.loc[date]
-                            strategy = os.path.basename(file)
-                            portfolio_history[date][strategy] = {'Net Profit': profit, 'Drawdown': drawdown, 'Return On Account': returnonAccount}
-                            
-                            if strategy in df_symbol['Strategy'].values:
-                                market = df_symbol.loc[df_symbol['Strategy'] == strategy, 'Markets'].values[0]
-                                symbol = df_symbol.loc[df_symbol['Strategy'] == strategy, 'Symbol'].values[0]
-                                margin = df_symbol.loc[df_symbol['Strategy'] == strategy, 'Overnight Margin'].values[0]
-                            else:
-                                market = "miss"
-                                symbol = "miss"
-                                margin = "miss"
-                            portfolio_history[date][strategy]['Market'] = market
-                            portfolio_history[date][strategy]['Symbol'] = symbol
-                            portfolio_history[date][strategy]['Margin'] = margin
-
-                    sorted_portfolio_history = {date: portfolio for date, portfolio in portfolio_history.items()}
-
-                    return sorted_portfolio_history
-
-
-                file_list = st.session_state['df_report_to_compare']
-                resample_options = ['W', 'M', 'Q', 'A']
-                window =st.selectbox('Select the sampling period:', resample_options, index=1)
-                #  CREO UN DIZIONARIO CON METRICHE CALCOLATE SULLA FINESTRA TEMPORALE SCELTA
-                portfolio_history = create_rotational_dictionary(file_list, df_symbol, window, myDB)
-                #for date, portfolio in portfolio_history.items():
-                #    st.write(f"{date}: {portfolio}")
-
-
-                df_portfolio_history = pd.DataFrame.from_dict({(date, strategy): metrics 
-                                                for date, portfolio in portfolio_history.items() 
-                                                for strategy, metrics in portfolio.items()}, 
-                                               orient='index')
-
-                # Resetto gli indici per ottenere una struttura più pulita
-                df_portfolio_history.reset_index(inplace=True)
-                df_portfolio_history.rename(columns={'level_0': 'Date', 'level_1': 'Strategy'}, inplace=True)
-                df_portfolio_history['Return On Account'] = df_portfolio_history['Return On Account']
-                df_portfolio_history['Date'] = pd.to_datetime(df_portfolio_history['Date'], format="mixed", dayfirst=True)
-                df_portfolio_history = df_portfolio_history.set_index('Date')
-
-                
-                
-
-
-
-                # Definisci una funzione di filtro personalizzata con una lista di filtri su colonne multiple come parametro
-                def custom_filter(group, filters):
-                    for column, operator, value in filters:
-                        # Applica il filtro corrente al DataFrame
-                        if operator == '>':
-                            group = group[group[column] > value]
-                        elif operator == '>=':
-                            group = group[group[column] >= value]
-                        elif operator == '<':
-                            group = group[group[column] < value]
-                        elif operator == '<=':
-                            group = group[group[column] <= value]
+                        if strategy in df_symbol['Strategy'].values:
+                            market = df_symbol.loc[df_symbol['Strategy'] == strategy, 'Markets'].values[0]
+                            symbol = df_symbol.loc[df_symbol['Strategy'] == strategy, 'Symbol'].values[0]
+                            margin = df_symbol.loc[df_symbol['Strategy'] == strategy, 'Overnight Margin'].values[0]
                         else:
-                            raise ValueError("Invalid operator. Please provide one of the following: '>', '>=', '<', '<='.")
-                    return group
+                            market = "miss"
+                            symbol = "miss"
+                            margin = "miss"
+                        portfolio_history[date][strategy]['Market'] = market
+                        portfolio_history[date][strategy]['Symbol'] = symbol
+                        portfolio_history[date][strategy]['Margin'] = margin
 
-                
-                def convert_df_to_filter_list(df_filters):
-                    filters = []
-                    for index, row in df_filters.iterrows():
-                        filter_name = row['Filter']
-                        operator = row['Operator']
-                        value = row['Value']
-                        filters.append((filter_name, operator, value))
-                    return filters
+                sorted_portfolio_history = {date: portfolio for date, portfolio in portfolio_history.items()}
 
-                # Utilizzo della funzione
-                column_filter = [{"Filter": "", "Operator": "", "Value": "0"}]
-
-                ### FILTRI SU STRATEGIE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                df_fil_strategy = pd.DataFrame(column_filter)
-                df_fil_strategy.Filter = df_fil_strategy.Filter.astype("category")
-                df_fil_strategy.Filter = df_fil_strategy.Filter.cat.add_categories(("Net Profit", "Drawdown", "Return On Account"))
-                df_fil_strategy.Operator = df_fil_strategy.Operator.astype("category")
-                df_fil_strategy.Operator = df_fil_strategy.Operator.cat.add_categories((">", "<", "=", ">=", "<="))
-                df_fil_strategy.Value = df_fil_strategy.Value.astype("int")
-
-                with st.form("Filters"):
-                    df_filters = st.data_editor(df_fil_strategy, hide_index=True, use_container_width=True, num_rows="dynamic")
-                    submitted = st.form_submit_button("Submit", use_container_width=True)
-
-                df_filters = df_filters.dropna()
-
-                filters = convert_df_to_filter_list(df_filters)
-
-                ## CREAZIONE PORTAFOGLIO GUIDA
-                # Applica la funzione di filtro personalizzata al DataFrame raggruppato
-                filtered_df = df_portfolio_history.groupby(['Date', 'Market']).apply(lambda x: custom_filter(x, filters))
-                filtered_df.index = filtered_df.index.droplevel('Market')
-                filtered_df.reset_index(level=0, inplace=True)
-                filtered_df = filtered_df.drop(['Date'], axis=1)
-                ### <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                return sorted_portfolio_history
 
 
+            file_list = st.session_state['df_report_to_compare']
+            resample_options = ['W', 'M', 'Q', 'A']
+            window =st.selectbox('Select the sampling period:', resample_options, index=1)
+            #  CREO UN DIZIONARIO CON METRICHE CALCOLATE SULLA FINESTRA TEMPORALE SCELTA
+            portfolio_history = create_rotational_dictionary(file_list, df_symbol, window, myDB)
+            #for date, portfolio in portfolio_history.items():
+            #    st.write(f"{date}: {portfolio}")
 
 
-                st.write(df_portfolio_history)
-                st.write(filtered_df)
-                
+            df_portfolio_history = pd.DataFrame.from_dict({(date, strategy): metrics 
+                                            for date, portfolio in portfolio_history.items() 
+                                            for strategy, metrics in portfolio.items()}, 
+                                            orient='index')
 
-                st.write("aaaaaaaaaaaa")
+            # Resetto gli indici per ottenere una struttura più pulita
+            df_portfolio_history.reset_index(inplace=True)
+            df_portfolio_history.rename(columns={'level_0': 'Date', 'level_1': 'Strategy'}, inplace=True)
+            df_portfolio_history['Return On Account'] = df_portfolio_history['Return On Account']
+            df_portfolio_history['Date'] = pd.to_datetime(df_portfolio_history['Date'], format="mixed", dayfirst=True)
+            df_portfolio_history = df_portfolio_history.set_index('Date')
+
+            
+            # Definisci una funzione di filtro personalizzata con una lista di filtri su colonne multiple come parametro
+            def custom_filter(group, filters):
+                for column, operator, value in filters:
+                    # Applica il filtro corrente al DataFrame
+                    if operator == '>':
+                        group = group[group[column] > value]
+                    elif operator == '>=':
+                        group = group[group[column] >= value]
+                    elif operator == '<':
+                        group = group[group[column] < value]
+                    elif operator == '<=':
+                        group = group[group[column] <= value]
+                    else:
+                        raise ValueError("Invalid operator. Please provide one of the following: '>', '>=', '<', '<='.")
+                return group
+
+            
+            def convert_df_to_filter_list(df_filters):
+                filters = []
+                for index, row in df_filters.iterrows():
+                    filter_name = row['Filter']
+                    operator = row['Operator']
+                    value = row['Value']
+                    filters.append((filter_name, operator, value))
+                return filters
+
+            # Utilizzo della funzione
+            column_filter = [{"Filter": "", "Operator": "", "Value": "0"}]
+
+            ### FILTRI SU STRATEGIE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            df_fil_strategy = pd.DataFrame(column_filter)
+            df_fil_strategy.Filter = df_fil_strategy.Filter.astype("category")
+            df_fil_strategy.Filter = df_fil_strategy.Filter.cat.add_categories(("Net Profit", "Drawdown", "Return On Account"))
+            df_fil_strategy.Operator = df_fil_strategy.Operator.astype("category")
+            df_fil_strategy.Operator = df_fil_strategy.Operator.cat.add_categories((">", "<", "=", ">=", "<="))
+            df_fil_strategy.Value = df_fil_strategy.Value.astype("int")
+
+            with st.form("Filters"):
+                df_filters = st.data_editor(df_fil_strategy, hide_index=True, use_container_width=True, num_rows="dynamic")
+                submitted = st.form_submit_button("Submit", use_container_width=True)
+
+            df_filters = df_filters.dropna()
+
+            filters = convert_df_to_filter_list(df_filters)
+
+            ## CREAZIONE PORTAFOGLIO GUIDA
+            # Applica la funzione di filtro personalizzata al DataFrame raggruppato
+            filtered_df = df_portfolio_history.groupby(['Date', 'Market']).apply(lambda x: custom_filter(x, filters))
+            filtered_df.index = filtered_df.index.droplevel('Market')
+            filtered_df.reset_index(level=0, inplace=True)
+            filtered_df = filtered_df.drop(['Date'], axis=1)
+            ### <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+            st.write(df_portfolio_history)
+            st.write(filtered_df)
+            
+
+            st.write("aaaaaaaaaaaa")
 
                                 
             """
