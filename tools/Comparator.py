@@ -68,7 +68,7 @@ def app():
                     else:
                         st.warning('Error!')
 
-##### Sezione comparazione report
+##### SECTION TO COMPARE REPORT
     if 'df_report_to_compare' in st.session_state and len(st.session_state['df_report_to_compare']) > 0:
 
         current_month, previous_month, previous_year, two_months_ago_month, two_months_ago_year = creation_Month()
@@ -86,19 +86,19 @@ def app():
         for report_name in st.session_state['df_report_to_compare']:
             df_raw_report = myDB.get_df_report(report_name)
             singole = prepare_df_comparator(df_raw_report)
-            singole['Cumulative P/L'] = singole['Profit/Loss'].cumsum().astype('float32') # MI CALCOLO L' EQUITY
+            singole['Cumulative P/L'] = singole['Profit/Loss'].cumsum().astype('float32') 
             month_df = twoMon_df(singole, two_months_ago_month, two_months_ago_year, previous_month, previous_year, current_month)
 
-            # CREO DATAFRAME PER METRICHE E CALCOLI
-            if menu == "Total":                                 # 1 DF TOTALE
+            # DataFrame for Calc and Metrics
+            if menu == "Total":                                 # 1 DF Total
                 df = singole
             elif menu == "Last 5% of trades":                   # 2 DF 5%
                 numTrades = num_Trades(singole)
                 perc_numTrade = int(numTrades * 5 / 100)
                 df = singole[-perc_numTrade:]
-            elif menu == "Last 2 months":                       #3 DF ULTIMI 2M
+            elif menu == "Last 2 months":                       #3 DF Last 2M
                 df = month_df
-            elif menu == "Last month":                          #3 DF ULTIMO MESE
+            elif menu == "Last month":                          #3 DF Last Month
                 mask = (singole.index.month == previous_month)  & (singole.index.year == previous_year)
                 last_month_df = singole.loc[mask]
                 df = last_month_df
@@ -107,28 +107,28 @@ def app():
             GrossLos = calc_grossLoss(df, 'Profit/Loss')
             win_trades = calc_winTrades(df)
             
-            # METRICHE
-            netProfit = calc_netProfit(df, 'Profit/Loss')                                                       # 1 METRICA NET PROFIT
-            numTrades = num_Trades(df)                                                                          # 2 METRICA NUMERO TRADE
-            avg = int(calc_AvgTrade(netProfit, numTrades))                                                      # 3 METRICA Avg Trade (AVG)
-            percProfit =int(calc_percProf(win_trades, numTrades))                                               # 4 METRICA PERCENT PROFIT
-            ProfitcFactor = calc_profictFactor(GrossWin, GrossLos)                                              # 5 METRICA PROFICT FACTOR
-            all_positive = check_last_two_months_positive(month_df)                                             # 6 METRICA ULTIMI DUE MESI POSITIVI
-            newHigh = check_new_high(singole['Cumulative P/L'] , previous_month, previous_year, current_month)  # 7 METRICA NUOVO PICCO NELL'ULTIMO MESE
-            max_drawdown = calc_maxDrawdown(df['Drawdown'])                                                     # 8 METRICA MAX DRAWDOWN
-            lastDD = calc_lastDD(df['Drawdown'])                                                                # 9 METRICA LAST DRAWDOWN
-            inc_DD = int((calc_inc(lastDD, max_drawdown)))                                                      # 10 METRICA DD ON MAXX DD
-            netpmaxdd = calc_NetpOnMaxdd(netProfit, max_drawdown)                                               # 11 METRICA NETPROFIT ON MAXDRAWDOWN
-            returnOnAccount = cacl_retOnAcc(max_drawdown, netProfit)                                            # 12 METRICA RETURN ON ACCOUNT
-            max_trade_loss = calc_maxTradeLoss(df)                                                              # 13 METRICA MAX TRADE LOSS
-            ultima_data = lastTRDday(df)                                                                        # 14 METRICA ULTIMO GIORNO DI TRADE
-            drawdown_periods, longest_drawdown = calc_drawdown_periods(df)                          # 15 METRICA FIND BEST DRAWDOWN PERIODS
+            # METRICS
+            netProfit = calc_netProfit(df, 'Profit/Loss')                                                       # 1 Metric NET PROFIT
+            numTrades = num_Trades(df)                                                                          # 2 Metric NUM TRADE
+            avg = int(calc_AvgTrade(netProfit, numTrades))                                                      # 3 Metric Avg Trade (AVG)
+            percProfit =int(calc_percProf(win_trades, numTrades))                                               # 4 Metric PERCENT PROFIT
+            ProfitcFactor = calc_profictFactor(GrossWin, GrossLos)                                              # 5 Metric PROFICT FACTOR
+            all_positive = check_last_two_months_positive(month_df)                                             # 6 Metric LAST 2 MONTH POSITIVE
+            newHigh = check_new_high(singole['Cumulative P/L'] , previous_month, previous_year, current_month)  # 7 Metric NEW HIGH IN LAST MONTH
+            max_drawdown = calc_maxDrawdown(df['Drawdown'])                                                     # 8 Metric MAX DRAWDOWN
+            lastDD = calc_lastDD(df['Drawdown'])                                                                # 9 Metric LAST DRAWDOWN
+            inc_DD = int((calc_inc(lastDD, max_drawdown)))                                                      # 10 Metric DD ON MAXX DD
+            netpmaxdd = calc_NetpOnMaxdd(netProfit, max_drawdown)                                               # 11 Metric NETPROFIT ON MAXDRAWDOWN
+            returnOnAccount = cacl_retOnAcc(max_drawdown, netProfit)                                            # 12 Metric RETURN ON ACCOUNT
+            max_trade_loss = calc_maxTradeLoss(df)                                                              # 13 Metric MAX TRADE LOSS
+            ultima_data = lastTRDday(df)                                                                        # 14 Metric LAST TRADE DAY
+            drawdown_periods, longest_drawdown = calc_drawdown_periods(df)                                      # 15 Metric FIND BEST DRAWDOWN PERIODS
     
-            # EQUITY PER DATAFRAME SCELTO
+            # EQUITY FOR SELECTED DATAFRAME
             new_dataframe = pd.DataFrame({'Profit/Loss': df['Cumulative P/L']})
             data_df = pd.DataFrame({"Profit/Loss": [new_dataframe['Profit/Loss'].tolist()]}) 
         
-            # CREO DATAFRAME
+            # MAKE DF
             data = {
                 'Net Profit': [netProfit],
                 'Num Trade':[numTrades],
@@ -151,7 +151,7 @@ def app():
             lista = pd.concat([pd.DataFrame(data, index=[file_name]), lista])
             lista = lista.sort_values(['Net Profit'], ascending=[False])
 
-        ### GRAFICA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        ### GRAPH >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         if not lista.empty:
             st.dataframe(lista, column_config={"Equity": st.column_config.LineChartColumn("Equity"), 
                                                 "% Profit": st.column_config.NumberColumn(format='%.0f %%'),
@@ -187,4 +187,4 @@ def app():
                     ('Net Profit', 'Avg Trade', 'Num Trade', 'Profit Factor', 'Ret on Acc.t', '% Profit', 
                     'NetP/MaxDD', 'Max Drawdown','DD% on Max DD', 'Max Trd Loss', 'Longest DD Day'))
             st.plotly_chart(compare_one_metric_reports(lista, option), use_container_width=True)
-            ### GRAFICA <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            ### GRAPH <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
