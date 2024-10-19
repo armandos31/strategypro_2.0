@@ -13,7 +13,6 @@ def app():
     myDB = MyDB('armandinodinodello')
     symbol_df = myDB.get_symbol_list()
 
-    #if user_id == 'armandinodinodello':
     with st.expander("Folio Dashboard", expanded=st.session_state['isExpandedFM']):
         if 'df_report_not_selected_folioManager' not in st.session_state:
             tag_file_content = myDB.get_tag_file()
@@ -110,7 +109,7 @@ def app():
         
         if app == "Rotational":
             
-            # CREO DIZIONARIO X OGNI STRATEGIA CON NET PROFIT, MAX DD, SYMBOLO E MERCATO PER FINESTRA TEMPORALE SCELTA
+            # I CREATE A DICTIONARY FOR EVERY STRATEGY WITH NET PROFIT, MAX DD, SYMBOL AND MARKET FOR THE CHOSEN TIME WINDOW
             def create_rotational_dictionary(file_list, df_symbol, window,  myDB):
                 portfolio_history = defaultdict(dict)
                 for file in file_list:
@@ -146,7 +145,7 @@ def app():
             file_list = st.session_state['df_report_to_compare']
             resample_options = ['W', 'M', 'Q', 'A']
             window =st.selectbox('Select the sampling period:', resample_options, index=1)
-            #  CREO UN DIZIONARIO CON METRICHE CALCOLATE SULLA FINESTRA TEMPORALE SCELTA
+            #  I CREATE A DICTIONARY WITH CALCULATED METRICS ON THE CHOSEN TIME WINDOW
             portfolio_history = create_rotational_dictionary(file_list, df_symbol, window, myDB)
             #for date, portfolio in portfolio_history.items():
             #    st.write(f"{date}: {portfolio}")
@@ -157,7 +156,7 @@ def app():
                                             for strategy, metrics in portfolio.items()}, 
                                             orient='index')
 
-            # Resetto gli indici per ottenere una struttura più pulita
+            # I reset the indexes to get a cleaner structure
             df_portfolio_history.reset_index(inplace=True)
             df_portfolio_history.rename(columns={'level_0': 'Date', 'level_1': 'Strategy'}, inplace=True)
             df_portfolio_history['Return On Account'] = df_portfolio_history['Return On Account']
@@ -165,10 +164,10 @@ def app():
             df_portfolio_history = df_portfolio_history.set_index('Date')
 
             
-            # Definisci una funzione di filtro personalizzata con una lista di filtri su colonne multiple come parametro
+            # Define a custom filter function with a list of filters on multiple columns as a parameter
             def custom_filter(group, filters):
                 for column, operator, value in filters:
-                    # Applica il filtro corrente al DataFrame
+                    # Apply the current filter to the DataFrame
                     if operator == '>':
                         group = group[group[column] > value]
                     elif operator == '>=':
@@ -191,10 +190,10 @@ def app():
                     filters.append((filter_name, operator, value))
                 return filters
 
-            # Utilizzo della funzione
+            # Using the function
             column_filter = [{"Filter": "", "Operator": "", "Value": "0"}]
 
-            ### FILTRI SU STRATEGIE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            ### FILTERS ON STRATEGY >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             df_fil_strategy = pd.DataFrame(column_filter)
             df_fil_strategy.Filter = df_fil_strategy.Filter.astype("category")
             df_fil_strategy.Filter = df_fil_strategy.Filter.cat.add_categories(("Net Profit", "Drawdown", "Return On Account"))
@@ -210,8 +209,8 @@ def app():
 
             filters = convert_df_to_filter_list(df_filters)
 
-            ## CREAZIONE PORTAFOGLIO GUIDA
-            # Applica la funzione di filtro personalizzata al DataFrame raggruppato
+            ## PORTFOLIO CREATION GUIDE
+            # Apply custom filter function to grouped DataFrame
             filtered_df = df_portfolio_history.groupby(['Date', 'Market']).apply(lambda x: custom_filter(x, filters))
             filtered_df.index = filtered_df.index.droplevel('Market')
             filtered_df.reset_index(level=0, inplace=True)
@@ -287,19 +286,19 @@ def app():
                 with col2:
                     filters = []
                     with st.form("FILTER FORM"):
-                        # Aggiungi un widget multiselect per i filtri
+                        # Add a multiselect widget for filters
                         filter_options = ['Drawdown', 'Net Profit', 'retOnAcc']
                         selected_filters = st.multiselect('Filter selection for single strategy', filter_options)
                         for filter_type in selected_filters:
-                            filter_value = st.number_input(f'Inserisci il valore per {filter_type}', step=100)
-                            filter_bool = st.checkbox(f'Seleziona il booleano per {filter_type}')
-                            filters.append((filter_type, filter_value, filter_bool)) # Aggiungi il nuovo filtro alla lista
+                            filter_value = st.number_input(f'Enter the value for {filter_type}', step=100)
+                            filter_bool = st.checkbox(f'Select the boolean for {filter_type}')
+                            filters.append((filter_type, filter_value, filter_bool)) # Add new filter to list
                         submitted_filter = st.form_submit_button("Submit")
                         if submitted_filter:
-                            st.success(f'Filtri finali: {filters}')
+                            st.success(f'Final filters: {filters}')
                 ### <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-                # CREO DIZIONARIO X OGNI STRATEGIA CON NET PROFIT, MAX DD, SYMBOLO E MERCATO PER FINESTRA TEMPORALE SCELTA
+                # I CREATE A DICTIONARY FOR EVERY STRATEGY WITH NET PROFIT, MAX DD, SYMBOL AND MARKET FOR THE CHOSEN TIME WINDOW
                 def create_rotational_dictionary(file_list, df, window,  myDB):
                     portfolio_history = defaultdict(dict)
                     for file in file_list:
@@ -326,14 +325,14 @@ def app():
                                 symbol = "miss"
                             portfolio_history[date][strategy]['Market'] = market
                             portfolio_history[date][strategy]['symbol'] = symbol
-                    # Ordina gli elementi del dizionario in base al netprofit
+                    # Sort dictionary items by netprofit
                     sorted_portfolio_history = {}
                     for date, portfolio in portfolio_history.items():
                         sorted_portfolio = dict(sorted(portfolio.items(), key=lambda item: item[1]['Net Profit'], reverse=True))
                         sorted_portfolio_history[date] = sorted_portfolio
                     return sorted_portfolio_history
 
-                # FUNZIONE PER SELEZIONARE I SISTEMI IN BASE AI FILTRI
+                # FUNCTION TO SELECT SYSTEMS BASED ON FILTERS
                 def filter_portfolio(portfolio, filters, limit):
                     sorted_portfolio = list(portfolio.keys())
                     for key, filter_value, greater_than in filters:
@@ -346,7 +345,7 @@ def app():
                                 sorted_portfolio = [system for system in sorted_portfolio if portfolio[system][key] <= filter_value]
                     return sorted_portfolio[:limit]
 
-                # CREO IL PORTAFOGLIO GUIDA PER SELEZIONARE I MIGLIORI SISTEMI x il prossimo mese IN BASE ALLA FUNZIONE FILTER PORTFOLIO
+                # I CREATE THE GUIDE PORTFOLIO TO SELECT THE BEST SYSTEMS for the next month BASED ON THE FILTER PORTFOLIO FUNCTION
                 def create_best_system_portfolio(sorted_portfolio_history, top_n, max_strategies_per_market, 
                                                 max_strategies_per_symbol, filters, max_profit_per_market=None):
                     best_system_portfolio = {}
@@ -359,7 +358,7 @@ def app():
                         market_profit = defaultdict(int)
                         selected_systems = []
                         for system in best_systems:
-                            if 'Market' in portfolio[system] and 'symbol' in portfolio[system]: # NESSUNA SELEZIONE
+                            if 'Market' in portfolio[system] and 'symbol' in portfolio[system]: # NO SELECTION
                                 market = portfolio[system]['Market']
                                 symbol = portfolio[system]['symbol']
                                 profit = portfolio[system]['Net Profit']
@@ -397,7 +396,7 @@ def app():
 
                 if submitted_input:
                     file_list = st.session_state['df_report_to_compare']
-                    #  CREO UN DIZIONARIO CON METRICHE CALCOLATE SULLA FINESTRA TEMPORALE SCELTA
+                    #  I CREATE A DICTIONARY WITH CALCULATED METRICS ON THE CHOSEN TIME WINDOW
                     rotational_portfolio = create_rotational_dictionary(file_list, df, window, myDB)
                     for date, portfolio in rotational_portfolio.items():
                         st.write(f"{date}: {portfolio}")
@@ -406,13 +405,13 @@ def app():
                                                                         max_strategies_per_symbol, filters, max_profit_per_market)
                     #for date, portfolio in best_system_portfolio.items():
                     #  st.write(f"{date}: {portfolio}")
-                    # CREO IL DATAFRAME VERO E PROPRIO CON I SISTEMI RISULTATI DA BEST SYSTEM PORTFOGLIO
+                    # I CREATE THE ACTUAL DATAFRAME WITH THE SYSTEMS RESULTED BY BEST SYSTEM PORTFOGLIO
                     resample_days = {'W': 7, 'M': 30, 'Q': 90, 'A': 365}
                     resample_day = resample_days[window]
                     portfolio_df = create_portfolio_dataframe(best_system_portfolio, file_list, resample_day, myDB)
                     portfolio_df = portfolio_df.drop(['Cumulative P/L', 'Drawdown'], axis=1)
                     portfolio_df = portfolio_df.sort_values(by='ExitDate-Time')
-                    portfolio_df['Cumulative P/L'] = portfolio_df['Profit/Loss'].cumsum() # MI CALCOLO L' EQUITY
+                    portfolio_df['Cumulative P/L'] = portfolio_df['Profit/Loss'].cumsum() # EQUITY
                     portfolio_df['Max Equity'] = portfolio_df['Cumulative P/L'].cummax() # MAX EQUITY
                     portfolio_df['Drawdown']  = portfolio_df['Max Equity'] - portfolio_df['Cumulative P/L'] # DRAWDOWN DATAFRAME
                     portfolio_df['Drawdown %']  = round((portfolio_df['Max Equity'] - portfolio_df['Cumulative P/L']) / portfolio_df['Max Equity'] * 100,2) # DRAWDOWN % DATAFRAME

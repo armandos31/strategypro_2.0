@@ -66,7 +66,7 @@ def app():
 
 
         if grafico == '3D Surface':
-            # calcola il massimo valore per ogni colonna del dataframe
+            # calculate the maximum value for each column of the dataframe
             default_x_col_name = df.columns[0]
             default_y_row_name = df.columns[1]
             default_z_row_name = df.columns[3]
@@ -77,7 +77,7 @@ def app():
 
             df = df.sort_values(by=[y_row_name, x_col_name])
 
-            # convertiamo in "set" per eliminare i duplicati
+            # convert to "set" to eliminate duplicates
             x_label = list(set(df[x_col_name]))
             y_label = list(set(df[y_row_name]))
             x_label.sort()
@@ -87,7 +87,7 @@ def app():
             data = np.ndarray(shape=(y_dim, x_dim), dtype=float)
             df_number_of_row = df.shape[0]
             df_counter_row = 0
-            # creazione superficie:
+            # surface creation:
             for y_index in range(y_dim):
                 dict_element = {}
                 while y_label[y_index] == df.iloc[df_counter_row][y_row_name]:
@@ -139,25 +139,25 @@ def app():
                 test_size = st.slider("Test Size % (0.1 to 0.9)", min_value=0.1, max_value=0.9, value=0.6, step=0.1)
             
             if test_input:
-                ### IMPOSTAZIONE PER REGRESSIONE LINEARE
-                # Dividi il dataset in un insieme di addestramento e un insieme di test
+                ### LINEAR REGRESSION SETUP
+                # Split the dataset into a training set and a testing set
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=0)
-                model = LinearRegression() # Crea un modello di regressione lineare
-                model.fit(X_train, y_train) # Addestra il modello sul dataset di addestramento
-                y_pred = model.predict(X_test) # Effettua previsioni sul dataset di test
-                mse = mean_squared_error(y_test, y_pred) # Calcola l'errore quadratico medio (MSE)
-                r2 = r2_score(y_test, y_pred) * 100 # Calcola il coefficiente di determinazione (R²)
+                model = LinearRegression() # Create a linear regression model
+                model.fit(X_train, y_train) # Train the model on the training dataset
+                y_pred = model.predict(X_test) # Make predictions on the test dataset
+                mse = mean_squared_error(y_test, y_pred) # Calculate the mean square error (MSE)
+                r2 = r2_score(y_test, y_pred) * 100 # Calculate the coefficient of determination (R²)
 
                 residuals = y_test - y_pred
 
-                ### GRAFICA
+                ### Graph
                 col1, col2 = st.columns((1.5,4))
-                ## DESCRIZIONE TABELLE SELEZIONATE
+                ## DESCRIPTION OF SELECTED TABLES
                 with col1:
                     st.write("Descriptive statistics of the variables:")
                     st.write(X.describe())
                 
-                ## CORRELAZIONI TRA LE SELEZIONATE
+                ## CORRELATIONS BETWEEN THE SELECTED
                 with col2:
                     correlation_matrix = X.corr()
                     st.write("Correlation matrix between variables:")
@@ -171,7 +171,7 @@ def app():
                 residuals_fig.update_layout(title='Residuals Graph')
                 st.plotly_chart(residuals_fig, use_container_width=True)
 
-                # Crea un grafico di previsione vs. valore effettivo con Plotly
+                # Create a forecast vs. actual value chart with Plotly
                 prediction_vs_actual_fig = px.scatter(x=y_test, y=y_pred, labels={'x': 'Actual Value', 'y': 'Expected Value'})
                 prediction_vs_actual_fig.update_layout(title='Forecast Chart e. Actual Value')
                 st.plotly_chart(prediction_vs_actual_fig, use_container_width=True)
