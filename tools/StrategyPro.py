@@ -105,34 +105,32 @@ def app():
         # SETTING DATAFRAME ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         df_list = [prepare_df_strategy_pro(myDB.get_df_report(report_name), report_name) for report_name in st.session_state['df_report_to_strategyPro']]
         tot_df = pd.concat(df_list) 
-        
-        # MODIFICO I PESI PRESI IN INPUT     
-        tot_df['Max Contracts'] = tot_df['StrategyName'].map(weights_dict) # Usa la funzione map() per mappare i valori di 'StrategyName' a 'Weights' in 'Max Contracts'
+            
+        tot_df['Max Contracts'] = tot_df['StrategyName'].map(weights_dict) 
         tot_df['ExitDate-Time'] = pd.to_datetime(tot_df['ExitDate-Time'], format="mixed", dayfirst=True) 
         tot_df['EntryDate-Time'] = pd.to_datetime(tot_df['EntryDate-Time'], format="mixed", dayfirst=True) 
-        tot_df['TimeInTrading'] = (tot_df['ExitDate-Time'] - tot_df['EntryDate-Time']).astype(str) #NUOVA COLONNA TIME IN TRADING
+        tot_df['TimeInTrading'] = (tot_df['ExitDate-Time'] - tot_df['EntryDate-Time']).astype(str) 
         tot_df = tot_df.set_index('ExitDate-Time')
         tot_df = tot_df.sort_values(by='ExitDate-Time')
-        # OPERAZIONI SUL DF
-        tot_df['Max Contracts'] = pd.to_numeric(tot_df['Max Contracts'], errors='coerce') # TRASFORMO LA COLONNA 
-        tot_df['Profit/Loss'] *= tot_df['Max Contracts'] # CAMBIO P/L IN BASE A MAX CONTRACTS
-        tot_df['MaxPositionProfit'] *= tot_df['Max Contracts'] # CAMBIO MAXPOSPROF IN BASE A MAX CONTRACTS
-        tot_df['MaxPositionLoss'] *= tot_df['Max Contracts'] # CAMBIO MAXPOSLOSS IN BASE A MAX CONTRACTS 
 
-        # SENZA CAPITALE INIZIALE 1.12
-        tot_df['Cumulative P/L'] = tot_df['Profit/Loss'].cumsum().astype('float32') # MI CALCOLO L' EQUITY
-        # CON CAPITALE INIZIALE 1.12
+        tot_df['Max Contracts'] = pd.to_numeric(tot_df['Max Contracts'], errors='coerce') 
+        tot_df['Profit/Loss'] *= tot_df['Max Contracts'] 
+        tot_df['MaxPositionProfit'] *= tot_df['Max Contracts'] 
+        tot_df['MaxPositionLoss'] *= tot_df['Max Contracts'] 
+
+        # WITHOUT INITIAL CAPITAL
+        tot_df['Cumulative P/L'] = tot_df['Profit/Loss'].cumsum().astype('float32') 
+        # WITH INITIAL CAPITAL
         #tot_df['Cumulative P/L'] = initial_capital + tot_df['Profit/Loss'].cumsum()
 
+        tot_df['Max Equity'] = tot_df['Cumulative P/L'].cummax() 
+        tot_df['Drawdown']  = tot_df['Max Equity'] - tot_df['Cumulative P/L']
 
-        tot_df['Max Equity'] = tot_df['Cumulative P/L'].cummax() # MAX EQUIT
-        tot_df['Drawdown']  = tot_df['Max Equity'] - tot_df['Cumulative P/L'] # DRAWDOWN DATAFRAME
-
-        # SENZA CAPITALE INIZIALE 1.12
-        #tot_df['Drawdown %']  = round((tot_df['Max Equity'] - tot_df['Cumulative P/L']) / tot_df['Max Equity'] * 100,2) # DRAWDOWN % DATAFRAME
-        # CON CAPITALE INIZIALE SENZA CALCOLO EQUITY 1.12
-        #tot_df['Drawdown %'] = round((tot_df['Max Equity'] - tot_df['Cumulative P/L']) / initial_capital * 100, 2)  # DRAWDOWN % DATAFRAME
-        # CON CAPITALE INIZIALE CON CALCOLO EQUITY 1.12
+        # WITHOUT INITIAL CAPITAL
+        #tot_df['Drawdown %']  = round((tot_df['Max Equity'] - tot_df['Cumulative P/L']) / tot_df['Max Equity'] * 100,2) 
+        # WITH INITIAL CAPITAL AND CALC EQUITY 
+        #tot_df['Drawdown %'] = round((tot_df['Max Equity'] - tot_df['Cumulative P/L']) / initial_capital * 100, 2) 
+        # WITH INITIAL CAPITAL AND CALC EQUITY 
         tot_df['Drawdown %'] = round(tot_df['Drawdown'] / initial_capital * 100, 2) 
 
         tot_df['Overnight Margin'] = tot_df['SymbolName'].map(symbol_margin_map)
@@ -142,47 +140,46 @@ def app():
         tot_df['Markets'] = tot_df['SymbolName'].map(symbol_map)
         tot_df['Markets'].fillna('miss')
 
-        # RIDUCO DIMENSIONI DATAFRAME
         tot_df['Max Contracts'] = tot_df['Max Contracts'].astype('float32')
         tot_df['MaxPositionLoss'] = tot_df['MaxPositionLoss'].astype('float32')
         tot_df['MaxPositionProfit'] = tot_df['MaxPositionProfit'].astype('float32')
         tot_df['Profit/Loss'] = tot_df['Profit/Loss'].astype('float32')
 
-        # DATAFRAME DIVISO PER STRATEGIE, NEWDF PROFIT/LOSS, DF EQUITY EQUITY DELLE STRATEGIE
+        # STRATEGY DF
         str_df = divide_tot_df(tot_df, 'StrategyName')
         str_dfEquity = total_equity(str_df)
         str_df['Profit/Loss'] = str_df.sum(axis=1)
  
-        # DATAFRAME DIVISO PER SIMBOLI, sym_df PROFIT/LOSS, sym_dfEquity EQUITY
+        # SYMBOL DF
         sym_df = divide_tot_df(tot_df, 'SymbolName')
         sym_dfEquity = total_equity(sym_df)
         sym_df['Profit/Loss'] = sym_df.sum(axis=1)
         
-        #DATAFRAME DIVISO PER MERCATI
+        # MARKETS DF
         mar_df = divide_tot_df(tot_df, 'Markets')
         mar_dfEquity = total_equity(mar_df)
         mar_df['Profit/Loss'] = mar_df.sum(axis=1)
 
-        # DATAFRAME DIVISO PER POSIZIONI LUNGHE O CORTE
+        # POSITION DF
         pos_df = divide_tot_df(tot_df, 'MarketPosition')
         equity_LongShort = total_equity(pos_df)
         pos_df['Profit/Loss'] = pos_df.sum(axis=1)
 
-        # NUMERO TRADE SU DF TOTALE
+        # NUM TRADE
         tot_numTrade = num_Trades(tot_df) 
         tot_winTrade = calc_winTrades(tot_df)
         tot_losTrade = calc_losTrades(tot_df)
 
-        ### CALCOLI METRICHE TOTALI 
-        tot_maxDrawdown = calc_maxDrawdown(tot_df['Drawdown'])                                              # MAX DRAWDOWN - VARIABILE
-        lastDrawdown = calc_lastDD(tot_df['Drawdown'])                                                      # ULTIMO DRAWDOWN DEL PERIODO
-        lastDrawdownPerc = calc_inc(lastDrawdown, tot_maxDrawdown)                                          # CALCOLO ULTIMO DRAWDOWN
+        # TOTAL METRICS 
+        tot_maxDrawdown = calc_maxDrawdown(tot_df['Drawdown'])                                              # MAX DRAWDOWN
+        lastDrawdown = calc_lastDD(tot_df['Drawdown'])                                                      # LAST DD PERIODS
+        lastDrawdownPerc = calc_inc(lastDrawdown, tot_maxDrawdown)                                          # LAST DD
         tot_netProfit = calc_netProfit(tot_df, 'Profit/Loss')                                               # NET PROFIT
         
-        #tot_maxDrawdownPerc = calc_maxDDPerc(tot_maxDrawdown, tot_netProfit)                               # CALCOLO INCIDENZA % DEL DRAWDOWN SUL TOTALE DEI DATAFRAME
-        tot_maxDrawdownPerc = tot_df['Drawdown %'].max()                                                    # DD % 1.12 
+        #tot_maxDrawdownPerc = calc_maxDDPerc(tot_maxDrawdown, tot_netProfit)                               # INCIDENCE DD % ON TOT DOF
+        tot_maxDrawdownPerc = tot_df['Drawdown %'].max()                                                    # DD %
 
-        tot_percProfit = calc_percProf(tot_winTrade, tot_numTrade)                                          # PERCENTUALE PROFITTO
+        tot_percProfit = calc_percProf(tot_winTrade, tot_numTrade)                                          # PERCENTAGE PROFIT
         tot_Avg = calc_AvgTrade(tot_netProfit, tot_numTrade)                                                # AVERAGE TRADE
         tot_GrossWin = calc_grossWin(tot_df, 'Profit/Loss')                                                 # GROSS WIN
         tot_GrossLos = calc_grossLoss(tot_df, 'Profit/Loss')                                                # GROSS LOSS
@@ -190,25 +187,25 @@ def app():
         tot_averageWin = calc_averageWin(tot_GrossWin, tot_winTrade)                                        # AVERAGE WIN 
         tot_averageLoss = calc_averageLoss(tot_GrossLos, tot_losTrade)                                      # AVERAGE LOSS
         tot_returnOnAccount = cacl_retOnAcc(tot_maxDrawdown, tot_netProfit)                                 # RETURN ON ACCOUNT
-        tot_avgDuration = duration_Trade(tot_df)                                                            # DURATA MEDIA TRADE DF TOTALE 
+        tot_avgDuration = duration_Trade(tot_df)                                                            # AVERAGE DURATION TRADE
         tot_maxTradeLoss = calc_maxTradeLoss(tot_df)                                                        # MAX TRADE LOSS
         tot_drawdown_periods, tot_longest_drawdown = calc_drawdown_periods(tot_df)                          # FIND BEST DRAWDOWN PERIODS
 
 
 
         menu = option_menu(
-                menu_title=None,  # required
+                menu_title=None,  
                 options=["Charts", "Metrics", "Annual Metrics", "Trade Analysis", "Correlations", "Distribution", "Allocation", "Returns", 
-                "Trade List", "Equity Control", "MonteCarlo", "What If?", "Volatility"],  # required
-                icons=[" ", " ", " "," ", " ", " ", " ", " ", " ", " ", " ", " ", " "],  # optional
-                menu_icon="cast",  # optional
-                default_index=0,  # optional
+                "Trade List", "Equity Control", "MonteCarlo", "What If?", "Volatility"], 
+                icons=[" ", " ", " "," ", " ", " ", " ", " ", " ", " ", " ", " ", " "], 
+                menu_icon="cast",  
+                default_index=0,  
                 orientation="horizontal",
             )
 
-        ### EQUITY LINE PORTFOLIO, SINGOLE E SIMBOLI, MERCATI +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        ### CHARTS +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         if menu == "Charts": 
-            fig_portfolio = gen_equityDrawdown(tot_df, tot_df['Cumulative P/L'], tot_df['Drawdown'], tot_df['Drawdown %']) # EQUITY E DRAWDOWN 
+            fig_portfolio = gen_equityDrawdown(tot_df, tot_df['Cumulative P/L'], tot_df['Drawdown'], tot_df['Drawdown %'])
             fig_portfolio_system = portplussingol(str_dfEquity, tot_df, tot_df['Drawdown %'])
             fig_portfolio_ddperiod = plot_drawdown_periods(tot_df, tot_drawdown_periods)
             fig_long_short = create_equity_line_plot(equity_LongShort, "", "Equity")
@@ -239,79 +236,75 @@ def app():
                 st.plotly_chart(fig_system, use_container_width=True)
 
 
-        ### METRICHE ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        ### METRICS ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         if menu == "Metrics":
-            # CREAZIONE 5% DF E NUMERO TRADE
-            per_numTrade = int(tot_numTrade * 5 / 100) # NR %5 TRADE TOTALI
-            per_df = tot_df[-per_numTrade:] #DATAFRAME 5%
+            # DF 5%
+            per_numTrade = int(tot_numTrade * 5 / 100) 
+            per_df = tot_df[-per_numTrade:]
             per_winTrade = calc_winTrades(per_df) 
             per_losTrade = calc_losTrades(per_df)
 
-            # CREO IL DATAFRAME 2 MENSILITA
+            # DF 2 MONTHS
             current_month, previous_month, previous_year, two_months_ago_month, two_months_ago_year = creation_Month() 
             mon_df = twoMon_df(tot_df, two_months_ago_month, two_months_ago_year, previous_month, previous_year, current_month) 
-            # NUMERO TRADE SU 2 MESI
             mon_numTrade = num_Trades(mon_df) 
             mon_winTrade = calc_winTrades(mon_df) 
             mon_losTrade = calc_losTrades(mon_df)
 
-            ### CALCOLI METRICHE 
-            # MAX DRAWDOWN - VARIABILE
+            ## CALC METRICS
             per_maxDrawdown = calc_maxDrawdown(per_df['Drawdown'])
             mon_maxDrawdown = calc_maxDrawdown(mon_df['Drawdown'])
-            # NET PROFIT
+
             per_netProfit = calc_netProfit(per_df, 'Profit/Loss')
             mon_netProfit = calc_netProfit(mon_df, 'Profit/Loss')
-            # CALCOLO INCIDENZA % DEL DRAWDOWN SUL TOTALE DEI DATAFRAME
+          
             per_maxDrawdownPerc = per_df['Drawdown %'].max() 
             mon_maxDrawdownPerc = mon_df['Drawdown %'].max() 
-            # PERCENTUALE PROFITTO
+       
             per_percProfit = calc_percProf(per_winTrade, per_numTrade)
             mon_percProfit = calc_percProf(mon_winTrade, mon_numTrade)
-            # AVERAGE TRADE
+      
             per_Avg = calc_AvgTrade(per_netProfit, per_numTrade)
             mon_Avg = calc_AvgTrade(mon_netProfit, mon_numTrade)
-            # GROSS WIN
+
             per_GrossWin = calc_grossWin(per_df, 'Profit/Loss') 
             mon_GrossWin = calc_grossWin(mon_df, 'Profit/Loss')
-            # GROSS LOSS
+            
             per_GrossLos = calc_grossLoss(per_df, 'Profit/Loss')
             mon_GrossLos = calc_grossLoss(mon_df, 'Profit/Loss') 
-            # PROFICT FACTOR
+           
             per_ProfitcFactor = calc_profictFactor(per_GrossWin, per_GrossLos)
             mon_ProfitcFactor = calc_profictFactor(mon_GrossWin, mon_GrossLos)
-            # AVERAGE WIN 
+         
             per_averageWin = calc_averageWin(per_GrossWin, per_winTrade)
             mon_averageWin = calc_averageWin(mon_GrossWin, mon_winTrade)
-            # AVERAGE LOSS
+          
             per_averageLoss = calc_averageLoss(per_GrossLos, per_losTrade)
             mon_averageLoss = calc_averageLoss(mon_GrossLos, mon_losTrade)
-            # RETURN ON ACCOUNT
+            
             per_returnOnAccount = cacl_retOnAcc(per_maxDrawdown, per_netProfit)
             mon_returnOnAccount = cacl_retOnAcc(mon_maxDrawdown, mon_netProfit)
-            # DURATA MEDIA TRADE DF TOTALE 
+            
             per_avgDuration = duration_Trade(per_df)
             mon_avgDuration = duration_Trade(mon_df)
-            # MAX TRADE LOSS
+            
             per_maxTradeLoss = calc_maxTradeLoss(per_df) 
             mon_maxTradeLoss = calc_maxTradeLoss(mon_df) 
-            # RITORNI
+            
             avg_set = int(tot_netProfit / len(str_df.resample('7D')))
             avg_men = int(tot_netProfit / len(str_df.resample('ME')))
             avg_ann = int(tot_netProfit / len(str_df.resample('YE')))
-            # NUOVI MASSIMI NELL ULTIMO MESE
+            
             newHigh = check_new_high(tot_df['Cumulative P/L'], previous_month, previous_year, current_month)
-            # ULTIMI DUE MESI POSITIVI
+            
             twoMonthPos = check_last_two_months_positive(tot_df) 
-            # DRAWDOWN PERIODS
+            
             per_drawdown_periods, per_longest_drawdown = calc_drawdown_periods(per_df) 
             mon_drawdown_periods, mon_longest_drawdown = calc_drawdown_periods(mon_df) 
 
-            ### PARTE GRAFICA 
             col0, col1, col2, col3, col4, col5  = st.columns((1, 1, 1, 1, 1, 1))
             with col0:
                 st.write("")
-            
             with col1: 
                 st.subheader("Tot Metrics")
                 metriche_general(st, tot_netProfit, tot_GrossWin, tot_GrossLos, tot_ProfitcFactor, tot_Avg, tot_percProfit, 
@@ -337,17 +330,15 @@ def app():
             with col5: 
                 st.write("")
             
-        ### METRICHE ANNUALI ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
+        ### ANNUAL METRICS ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
         if menu == "Annual Metrics":          
             colcopy = ['Profit/Loss', 'MaxPositionProfit', 'MaxPositionLoss', 'TimeInTrading', 'Drawdown', 'Cumulative P/L']
             years_df = tot_df[colcopy].copy()
-            anni = years_df.index.year # PER OGNI ANNO CREARE UN DATAFRAME
+            anni = years_df.index.year 
             lista = pd.DataFrame()
             
             for anno in set(anni):
                 df = years_df[anni == anno].copy()
-                # 1.12
-                #equity = calc_equity(df)
                 max_drawdown = calc_maxDrawdown(df['Drawdown'])   
                 df['Drawdown %'] = round(df['Drawdown'] / initial_capital * 100, 2) 
                 maxDrawdownPerc = df['Drawdown %'].max() 
@@ -365,10 +356,8 @@ def app():
                 avg_Duration = duration_Trade(df)
                 max_trade_loss = calc_maxTradeLoss(df)  
 
-                # 1.12
                 new_dataframe = pd.DataFrame({'Profit/Loss': df['Cumulative P/L']})
                 data_df = pd.DataFrame({"Profit/Loss": [new_dataframe['Profit/Loss'].tolist()]}) 
-
                 yr_drawdown_periods, yr_longest_drawdown = calc_drawdown_periods(df)  
 
                 data = {
@@ -407,7 +396,7 @@ def app():
                 st.plotly_chart(fig5, use_container_width=True)
                
                 
-        ### ANALISI DEI TRADE ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        ### TRADE ANALISYS ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         if menu == "Trade Analysis": 
             colcopy = ['Profit/Loss', 'MaxPositionProfit', 'MaxPositionLoss', 'TimeInTrading', 'EntryDate-Time']
             df = tot_df[colcopy].copy()
@@ -416,20 +405,17 @@ def app():
             df['MAE'] = df[['Profit/Loss', 'MaxPositionProfit', 'MaxPositionLoss']].min(axis=1)
             df['MFE'] = df[['Profit/Loss', 'MaxPositionProfit', 'MaxPositionLoss']].max(axis=1)
             
-            # SERIE DI TRADE CONSECUTIVE PERDENTI/VINCENTI
             serie_Consecutiva = processDf_consecutive(df)
             positive = positive_sequence(serie_Consecutiva)
             negative = negative_sequence(serie_Consecutiva)
             serie = pd.concat([positive, negative], axis=1)
             
-            # Creo figure
             fig = tradeTime_graph(df)
             df['MaxPositionProfit'] = df['MaxPositionProfit'].apply(lambda x: max(x, 0))
             fig_mae = mae_mfe(df, 'MAE', 'Maximum Adverse Excursion (MAE) Table')
             fig_mfe = mae_mfe(df, 'MFE', 'Maximum Favorable Excursion (MFE) Table')
             fig_tradeinTime = tradeinTime(df)
 
-            # MOSTRO 
             st.plotly_chart(fig, use_container_width=True)
             col1, col2 = st.columns(2)
             with col1: st.plotly_chart(fig_mae, use_container_width=True)
@@ -439,8 +425,7 @@ def app():
             with col4: st.plotly_chart(fig_tradeinTime, use_container_width=True)
             
 
-
-        ### CORRELAZIONI +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        ### CORRELATIONS +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         if menu == "Correlations":
             categories_period = ["Day", "Week", "Month", "3 Month", "1 Year", "2 Year"]
             caterogies_corr = ["Strategy", "Symbol", "Market", "Long/Short"]
@@ -462,15 +447,13 @@ def app():
             elif selected_categories == "Market": df = create_corr_df(mar_df)
             else: df = create_corr_df(pos_df)
 
-            # Applica la funzione a tutti gli elementi del DataFrame
             if choice == 'Only Profit':
                 df = replace_values(df, True)
             if choice == 'Only Loss':
                 df = replace_values(df, False)
                         
             roll_corr, df_avg_corr = rolling_correlation(df, list(combinations(df.columns, 2)), period)
-
-            
+  
             corrStyler = apply_corr_style(df_avg_corr)
             st.dataframe(corrStyler, use_container_width=True)
 
@@ -479,19 +462,17 @@ def app():
                 st.plotly_chart(fig, use_container_width=True)
 
 
-
-        ### DISTRIBUZIONE NORMALE ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        ### DISTRIBUTION  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         if menu == "Distribution":
             colcopy = ['Profit/Loss', 'MaxPositionProfit', 'MaxPositionLoss']
             df = tot_df[colcopy].copy()
 
-            mu, sigma = calc_normal_distribution(df, 'Profit/Loss') # DISTRIBUZIONE NORMALE
+            mu, sigma = calc_normal_distribution(df, 'Profit/Loss') 
             
             count_sett = ret_sett(df, 'count')
             count_gmo = ret_dayMonth(df, 'count')
             count_hou = ret_hour(df, 'count')
 
-            # DISTRIBUZIONE OPERAZIONI LONG E SHORT
             if -1 in pos_df.columns and 1 in pos_df.columns:
                 pos_dfLong = pos_df[(pos_df[1] != 0)]
                 pos_dfShort = pos_df[(pos_df[-1] != 0)]
@@ -505,10 +486,9 @@ def app():
 
             with tabTrade:
                 col1, col2 = st.columns(2)
-                with col1: grafico_settimanale(count_sett, "Trade Count") #SETTIMANALI
+                with col1: grafico_settimanale(count_sett, "Trade Count") 
                 with col2: grafico_ggMese(count_gmo, 'Sum of Trade for day of the month')
                 grafico_ritorni_orari(count_hou, 'Sum of Trade for each hour of the day')
-
 
 
         ### ALLOCATION +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -531,7 +511,6 @@ def app():
             date_range = pd.date_range(start=start_date, end=end_date, freq='D')
             date_df = pd.DataFrame({'Date': date_range})
 
-            # Creazione di un DataFrame per le strategie attive
             active_df = pd.DataFrame(index=date_df['Date'])
             active_df['ActiveStrategies'] = 0
 
@@ -545,7 +524,6 @@ def app():
             active_df['ActiveStrategies'] = active_df.sum(axis=1)
             active_df = active_df.astype('int16')
             
-            # Creazione di un DataFrame per i margini per strategia
             margin_df = pd.DataFrame(index=date_df['Date'])
             
             for _, row in df.iterrows():
@@ -574,8 +552,8 @@ def app():
             min_margin = statistics_active_margins['min']
             max_margin =statistics_active_margins['max']
 
-            fig = create_overTime(active_df, 'ActiveStrategies', ' ', 'Time', 'Number of Strategies') # GRAFICO STRATEGIE ATTIVE NEL TEMPO
-            fig2 = create_overTime(margin_df, 'Total Margin', ' ', 'Time', 'Margin') # GRAFICO MARGINI ATTIVI NEL TEMPO
+            fig = create_overTime(active_df, 'ActiveStrategies', ' ', 'Time', 'Number of Strategies') 
+            fig2 = create_overTime(margin_df, 'Total Margin', ' ', 'Time', 'Margin') 
 
             col1, col2, col3, col4 = st.columns(4)
             with col1:
@@ -587,7 +565,6 @@ def app():
             with col4:
                 plot_assAll(allocation_Market['Markets'], allocation_Market[sumColName], 'Market')
             
-
             st.subheader("Active Strategies")
             colStr1, colStr2 = st.columns((0.5,3))
             with colStr1:
@@ -608,18 +585,17 @@ def app():
                 st.plotly_chart(fig2, use_container_width=True)
 
 
-        ### RITORNI ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        ### RETURNS ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         if menu == "Returns":
             colcopy = ['Profit/Loss']
             df = tot_df[colcopy].copy()
-            # RITORNI ENTRAMBI LOGN & SHORT INSIEME
+            
             ret_set = ret_sett(df, 'sum') 
             ret_men = ret_mens(df)
             ret_gmo = ret_dayMonth(df, 'sum') 
             ret_ann = ret_year(df)
             ret_hou = ret_hour(df, 'sum')
             
-            # RITORNI CONTRAPPOSTI
             if 1 in pos_df.columns and -1 in pos_df.columns:
                 ret_setLS = ret_sett(pos_df, 'sum', 1, -1) 
                 ret_menLS = ret_mens(pos_df)
@@ -631,23 +607,23 @@ def app():
             with tablongshort:
                 rendimenti_mensili(df) 
                 col9, col10  = st.columns(2, gap="small")
-                with col9: grafico_annuali(ret_ann) # ANNUALI 
-                with col10: grafico_mensile(ret_men) # MENSILI
+                with col9: grafico_annuali(ret_ann)  
+                with col10: grafico_mensile(ret_men) 
 
                 col11, col12 = st.columns(2, gap="small")
-                with col11: grafico_settimanale(ret_set, 'Sum of Profit/Loss by day of the week') #SETTIMANALI
-                with col12: grafico_ggMese(ret_gmo, 'Sum of Profit/Loss for day of the month') # GIORNO DEL MESE
+                with col11: grafico_settimanale(ret_set, 'Sum of Profit/Loss by day of the week') 
+                with col12: grafico_ggMese(ret_gmo, 'Sum of Profit/Loss for day of the month') 
                 grafico_ritorni_orari(ret_hou, 'Sum of Profit/Loss for each hour of the day')
                 
             with tablongorshort:
                 if 1 in pos_df.columns and -1 in pos_df.columns:
                     col9, col10  = st.columns(2, gap="small")
-                    with col9: grafico_annuali(ret_annLS, 1, -1) # ANNUALI 
-                    with col10: grafico_mensile(ret_menLS, 1, -1) # MENSILI
+                    with col9: grafico_annuali(ret_annLS, 1, -1) 
+                    with col10: grafico_mensile(ret_menLS, 1, -1)
 
                     col11, col12 = st.columns(2, gap="small")
-                    with col11: grafico_settimanale(ret_setLS, 'Sum of Long/Short by day of the week', 1, -1) #SETTIMANALI
-                    with col12: grafico_ggMese(ret_gmoLS,'Sum of Long/Short for each day of the month', 1,-1) # GIORNO DEL MESE
+                    with col11: grafico_settimanale(ret_setLS, 'Sum of Long/Short by day of the week', 1, -1)
+                    with col12: grafico_ggMese(ret_gmoLS,'Sum of Long/Short for each day of the month', 1,-1) 
                     grafico_ritorni_orari(ret_houLS, 'Sum of Long/Short for each hour of the day', 1, -1)
                 else: 
                     st.write("Long/Short operations only")
@@ -663,9 +639,10 @@ def app():
 
         ### EQUITY CONTROL +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         if menu == "Equity Control":
+            
             colcopy = ['Profit/Loss', 'Cumulative P/L']
             df = tot_df[colcopy].copy()
-            df.rename(columns={'Cumulative P/L': 'Original Equity'}, inplace=True) # rinomino colonna df
+            df.rename(columns={'Cumulative P/L': 'Original Equity'}, inplace=True)
 
             categories = ["Sma", "BB Low", "Mov Avg Add Contracts"]
             
@@ -673,47 +650,43 @@ def app():
             with col1: selected_categories = st.selectbox("Control By:", categories)
             with col2: lenMa = st.number_input('SMA length', min_value=10, max_value=200, value=50, step=10)
 
-
             if selected_categories == "Sma":
-                df['Control curve'] = df['Original Equity'].rolling(window=lenMa).mean() # curva di controllo
-                # CONTROL 0 SE NON CE BISOGNO DI CONTROLLO 1 SE STACCARE EQUITY
+                df['Control curve'] = df['Original Equity'].rolling(window=lenMa).mean() 
                 df['Control'] = df.apply(lambda row: 0 if pd.isna(row['Control curve']) or row['Original Equity'] > row['Control curve'] else 1, axis=1)
-                df['Control'] = df['Control'].shift(fill_value=1) # SHIFTIAMO LE OPERAZIONI DI 1 RIGA
-                df['Profit/Loss Contr'] = df.apply(lambda row: row['Profit/Loss'] if row['Control'] == 0 else 0, axis=1) # COPIO PROFITTI E PERDITE DA ORIGINALE IN NUOVA COLONNA
-                df['Controlled equity'] = df['Profit/Loss Contr'].cumsum() #CALCOLO EQUITY CUMULATIVA
+                df['Control'] = df['Control'].shift(fill_value=1)
+                df['Profit/Loss Contr'] = df.apply(lambda row: row['Profit/Loss'] if row['Control'] == 0 else 0, axis=1) 
+                df['Controlled equity'] = df['Profit/Loss Contr'].cumsum() 
 
             elif selected_categories == "BB Low":
                 with col3: 
                     lennDev = st.number_input('DEV length', min_value=1, max_value=5, value=2, step=1)
 
-                    df['SMA'] = df['Original Equity'].rolling(window=lenMa).mean() # sma
-                    df['STD'] = df['Original Equity'].rolling(window=lenMa).std() # std
+                    df['SMA'] = df['Original Equity'].rolling(window=lenMa).mean()
+                    df['STD'] = df['Original Equity'].rolling(window=lenMa).std() 
                     df['Control curve'] = df['SMA'] - lennDev * df['STD']
                     df = df.drop(['SMA', 'STD'], axis=1)
-                    # CONTROL 0 SE NON CE BISOGNO DI CONTROLLO 1 SE STACCARE EQUITY
                     df['Control'] = df.apply(lambda row: 0 if pd.isna(row['Control curve']) or row['Original Equity'] > row['Control curve'] else 1, axis=1)
-                    df['Control'] = df['Control'].shift(fill_value=1) # SHIFTIAMO LE OPERAZIONI DI 1 RIGA
-                    df['Profit/Loss Contr'] = df.apply(lambda row: row['Profit/Loss'] if row['Control'] == 0 else 0, axis=1) # COPIO PROFITTI E PERDITE DA ORIGINALE IN NUOVA COLONNA
-                    df['Controlled equity'] = df['Profit/Loss Contr'].cumsum() #CALCOLO EQUITY CUMULATIVA
+                    df['Control'] = df['Control'].shift(fill_value=1) 
+                    df['Profit/Loss Contr'] = df.apply(lambda row: row['Profit/Loss'] if row['Control'] == 0 else 0, axis=1) 
+                    df['Controlled equity'] = df['Profit/Loss Contr'].cumsum()
 
             else: 
                 with col3: 
-                    moltiplicatore = st.number_input('Num Contracts', min_value=1, max_value=10, value=2, step=1)
 
-                    df['Control curve'] = df['Original Equity'].rolling(window=lenMa).mean() # sma
+                    moltiplicatore = st.number_input('Num Contracts', min_value=1, max_value=10, value=2, step=1)
+                    df['Control curve'] = df['Original Equity'].rolling(window=lenMa).mean() 
                     df['Control'] = df.apply(lambda row: 0 if pd.isna(row['Control curve']) or row['Original Equity'] > row['Control curve'] else 1, axis=1)
-                    df['Control'] = df['Control'].shift(fill_value=1) # SHIFTIAMO LE OPERAZIONI DI 1 RIGA
+                    df['Control'] = df['Control'].shift(fill_value=1) 
                     def calculate_profit_loss_contr(row):
                         if row['Control'] == 0:
                             return row['Profit/Loss']
                         elif row['Control'] == 1:
                             return row['Profit/Loss'] * moltiplicatore
                         else:
-                            return None  # Gestire altri casi se necessario
+                            return None 
                     df['Profit/Loss Contr'] = df.apply(calculate_profit_loss_contr, axis=1)
                     df['Controlled equity'] = df['Profit/Loss Contr'].cumsum()
 
-            ## METRICHE 
             con_NetProfit = calc_netProfit(df, 'Profit/Loss Contr')
             con_GrossWin = calc_grossWin(df, 'Profit/Loss Contr')
             con_GrossLos = calc_grossLoss(df, 'Profit/Loss Contr')
@@ -723,27 +696,22 @@ def app():
             con_losTrade = df[(df["Control"] == 0) & (df["Profit/Loss Contr"] < 0)]["Profit/Loss Contr"].count()
             con_Avg = calc_AvgTrade(con_NetProfit, con_numTrade)
             con_percProfit = calc_percProf(con_winTrade, con_numTrade)
-            
-            #con_drawdown = calc_drawdown(df['Controlled equity'])
-    
-            df['Max Equity'] = df['Controlled equity'].cummax() # MAX EQUIT
-            df['Drawdown']  = df['Max Equity'] - df['Controlled equity'] # DRAWDOWN DATAFRAME
+
+            df['Max Equity'] = df['Controlled equity'].cummax() 
+            df['Drawdown']  = df['Max Equity'] - df['Controlled equity'] 
             con_maxDrawdown = calc_maxDrawdown(df['Drawdown'])
 
-            # 1.12
-            #con_maxDrawdownPerc = calc_maxDDPerc(con_maxDrawdown, con_NetProfit) 
             df['Drawdown %'] = round(df['Drawdown'] / initial_capital * 100, 2)
             con_maxDrawdownPerc = df['Drawdown %'].max() 
 
             con_returnOnAccount = cacl_retOnAcc(con_maxDrawdown, con_NetProfit)
             con_averageWin = calc_averageWin(con_GrossWin, con_winTrade)
             con_averageLoss = calc_averageLoss(con_GrossLos, con_losTrade)
-            con_maxTradeLoss = int(df['Profit/Loss Contr'].min()) # MAX TRADE LOSS
+            con_maxTradeLoss = int(df['Profit/Loss Contr'].min()) 
 
             con_drawdown_periods, con_longest_drawdown = calc_drawdown_periods(df) 
 
             fig = plot_equity_control(df)
-            
             colOri, colCon, colGra = st.columns((0.5, 0.5, 3))
             with colOri:
                 st.subheader("Original Metrics")
@@ -777,71 +745,54 @@ def app():
             with tab_Montecarlo: 
                 cumulative_returns, df_profitloss = monte_carlo_randomized(df, num_simulations, fun_montecarlo)
 
-                # DATAFRAME X GRAFICO
                 cumulative_returns_all = cumulative_returns.copy()
                 cumulative_returns_all['Original'] = equity 
                 cumulative_returns_all = cumulative_returns_all.astype(int)
                 cumulative_returns_all.columns = [str(col) for col in cumulative_returns_all.columns]
-                
-                ## CALCOLO METRICHE SIMULATE
+
                 metrics_results = calculate_metrics_simulate(cumulative_returns, df_profitloss, initial_capital)
                 sim_Max_Drawdown = int(metrics_results["MaxDrawdown"].mean())
-                
-                #1.12
                 sim_Max_Drawdown_perc = int(metrics_results["Perc Drawdown"].mean())
-
                 sim_net_Profit = int(metrics_results["Net Profit"].mean())
                 sim_ret_acc = int(metrics_results["Return On Acc"].mean())
 
                 distr_netProfit = distribution_Metrics(metrics_results, "Net Profit")
                 distr_MaxDrawdown = distribution_Metrics(metrics_results, "MaxDrawdown")
                 distr_retAcc = distribution_Metrics(metrics_results, "Return On Acc")
-                #1.12
                 distr_MaxDrawdown_perc = distribution_Metrics(metrics_results, "Perc Drawdown")
                 
-                # Grafico della distribuzione utilizzando Plotly
                 fig_equityMonte = plot_Montecarlo(cumulative_returns_all)
                 fig_distr_NetP = px.bar(distr_netProfit, x="Net Profit", y='Frequency')
                 fig_distr_MaxDD = px.bar(distr_MaxDrawdown, x="MaxDrawdown", y='Frequency')
                 fig_distr_retAcc = px.bar(distr_retAcc, x="Return On Acc", y='Frequency')
-                #1.12
                 fig_distr_MaxDD_perc = px.bar(distr_MaxDrawdown_perc, x="Perc Drawdown", y='Frequency')
 
-                ## GRAFICA 
                 col1, col2 = st.columns((1,5.5))
+                
                 with col1:
                     st.subheader("Original")
                     tot_netProfit = locale.currency(tot_netProfit, grouping=True)
                     st.write(":blue[Net Profit:]", tot_netProfit)
                     tot_maxDrawdown = locale.currency(tot_maxDrawdown, grouping=True)
                     st.write(":red[Max Drawdown:]", tot_maxDrawdown)
-                    
-                    # 1.12
                     st.write(":red[Max Drawdown %: ] {:.2f}%".format(tot_maxDrawdownPerc))
-                    
                     st.write(":green[Return on Account:] {:.0f}".format(tot_returnOnAccount)) 
-
                     st.subheader("Avg Simulate")
                     sim_net_Profit = locale.currency(sim_net_Profit, grouping=True)
                     st.write(":blue[AVG Net Profit:]", sim_net_Profit)
                     sim_Max_Drawdown = locale.currency(sim_Max_Drawdown, grouping=True)
                     st.write(":red[AVG Max Drawdown:]", sim_Max_Drawdown)
-                    
-                    # 1.12
                     st.write(":red[Max Drawdown %: ] {:.2f}%".format(sim_Max_Drawdown_perc))
-
                     st.write(":green[AVG Return on Account:] {:.0f}".format(sim_ret_acc))
-                with col2: st.plotly_chart(fig_equityMonte, use_container_width=True)
                 
+                with col2: st.plotly_chart(fig_equityMonte, use_container_width=True)
+
                 st.subheader("Frequency")
                 d1, d2, d3, d4 = st.columns(4)
                 with d1: st.plotly_chart(fig_distr_NetP, use_container_width = True)
                 with d2: st.plotly_chart(fig_distr_MaxDD, use_container_width = True)
                 with d3: st.plotly_chart(fig_distr_retAcc, use_container_width = True)
-                # 1.12
                 with d4: st.plotly_chart(fig_distr_MaxDD_perc, use_container_width = True)
-
-
             with tab_Simulation:                 
                 historical_equity, simulated_equity, p5, p95 = calc_equity_simul(df, num_simulations, num_future_trades)
                 plot_equity(historical_equity, simulated_equity, p5, p95, num_future_trades)
@@ -874,18 +825,15 @@ def app():
                     ore_da_escludere = st.multiselect('Select the hours to exclude:',
                     ['0','1','2','3','4','5','6','7','8','9','10','11','12',
                     '13','14','15','16','17','18','19','20','21','22','23'])
-                
                 with col5:
                     operation = st.radio("Select the operations to exclude", ["None", "Long", "Short"])
                     if operation == "None": operazione = []
                     elif operation == "Long": operazione = [1]
                     else: operazione = [-1]
-
                 with col6:
                     lenPerc = st.number_input('Eliminiating Best % Trades', min_value=0, max_value=95, value=0, step=5)
                     num_records_to_exclude = int(len(df_sorted) * (lenPerc/100))
                     df_excluded = df_sorted.iloc[num_records_to_exclude:]
-
 
                 submitted = st.form_submit_button("Submit", use_container_width=True)
 
@@ -902,20 +850,16 @@ def app():
                 (~df.index.dayofweek.isin(giorni_da_escludere)) &
                 (~df.index.hour.isin(ore_da_escludere)) &
                 (~df['MarketPosition'].isin(operazione)) &
-                (df.index.isin(df_excluded.index))
-                ]
-
+                (df.index.isin(df_excluded.index))]
 
             df['Cumulative P/L'] = df['Profit/Loss'].cumsum()     
             tot_df_subset = tot_df[['Cumulative P/L']].rename(columns={'Cumulative P/L': 'Original'})
             df_subset = df[['Cumulative P/L']].rename(columns={'Cumulative P/L': 'Modified'})
-            # Unire i due DataFrame basandosi sull'indice
             merged_df = pd.merge(tot_df_subset, df_subset, left_index=True, right_index=True, how='outer')
             merged_df.ffill(inplace=True)
 
             fig2 = create_equity_line_plot(merged_df, "", "Equity")
             
-            ## METRICHE 
             con_NetProfit = calc_netProfit(df, 'Profit/Loss')
             con_GrossWin = calc_grossWin(df, 'Profit/Loss')
             con_GrossLos = calc_grossLoss(df, 'Profit/Loss')
@@ -926,12 +870,8 @@ def app():
             con_Avg = calc_AvgTrade(con_NetProfit, con_numTrade)
             con_percProfit = calc_percProf(con_winTrade, con_numTrade)
             
-            # 1.12
-            #con_drawdown = calc_drawdown(df['Cumulative P/L'])
-            #con_maxDrawdown = calc_maxDrawdown(con_drawdown)
-            #con_maxDrawdownPerc = calc_maxDDPerc(con_maxDrawdown, con_NetProfit) 
-            df['Max Equity'] = df['Cumulative P/L'].cummax() # MAX EQUIT
-            df['Drawdown']  = df['Max Equity'] - df['Cumulative P/L'] # DRAWDOWN DATAFRAME
+            df['Max Equity'] = df['Cumulative P/L'].cummax() 
+            df['Drawdown']  = df['Max Equity'] - df['Cumulative P/L'] 
             con_maxDrawdown = calc_maxDrawdown(df['Drawdown']) 
             df['Drawdown %'] = round(df['Drawdown'] / initial_capital * 100, 2)
             con_maxDrawdownPerc = df['Drawdown %'].max() 
@@ -944,7 +884,6 @@ def app():
             else: con_maxTradeLoss = 0
             con_drawdown_periods, con_longest_drawdown = calc_drawdown_periods(df)  
             
-            ## GRAFICI E METRICHE 
             colOri, colCon, colGra = st.columns((0.5, 0.5, 3))
             with colOri:
                 st.subheader("Original Metrics")
@@ -964,15 +903,12 @@ def app():
             
             colcopy = ['Profit/Loss']
             df = tot_df[colcopy].copy()
-
-            ## OP SU DATAFRAME
             df['Profit/Loss'] = pd.to_numeric(df['Profit/Loss'], errors='coerce')
-            df['Profit/Loss'] = df['Profit/Loss'].ffill()  # Rimuovi o sostituisci i NaN (ad esempio, con ffill)
+            df['Profit/Loss'] = df['Profit/Loss'].ffill()  
             df['Daily_Return'] = df['Profit/Loss'].pct_change()
             df.replace([np.inf, -np.inf], np.nan, inplace=True)
-            df['Volatility'] = df['Daily_Return'].rolling(window_size).std().fillna(0)  # Calcola la volatilità mobile
+            df['Volatility'] = df['Daily_Return'].rolling(window_size).std().fillna(0) 
             
-            # DATI
             std_mean = int(df['Volatility'].mean())
             std_std = int(df['Volatility'].std())
             std_min = int(df['Volatility'].min())
@@ -981,7 +917,6 @@ def app():
             std_quantile_50 = int(df['Volatility'].quantile(0.50))
             std_quantile_75 = int(df['Volatility'].quantile(0.75))
 
-            # GRAPHS
             col1, col2 = st.columns((1,5.5))
             with col1:
                 st.write("Mean:", std_mean)
