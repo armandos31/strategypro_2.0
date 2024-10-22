@@ -22,15 +22,14 @@ class MyDB:
         self._tag_file_path = os.path.join(self._user_path, self._tag_file_name)
         self._symbol_list_path = os.path.join(self._user_path, self._symbol_list_file_name)
 
-    # Se esiste un file con lo stesso nome, questo viene sostituito da quello nuovo
+    # If a file with the same name exists, it is replaced by the new one
     def insert_file(self, report) -> None:
         file_name = secure_filename(report.name)
         report_file_path = os.path.join(self._user_path, file_name)
         
-        if os.path.exists(report_file_path): os.remove(report_file_path) # Elimina il file precedentemente caricato
+        if os.path.exists(report_file_path): os.remove(report_file_path) # Delete the previously uploaded file
         with open(report_file_path, 'wb') as file: file.write(report.read())
-
-        # Carica dati esistenti se il file esiste
+        # Load existing data if file exists
         try:
             with open(self._tag_file_path, 'r') as file:
                 tag_file_content = json.load(file)
@@ -53,7 +52,7 @@ class MyDB:
         portfolio_file_path = os.path.join(self._user_path, file_name)
         df_portfolio.to_csv(portfolio_file_path, index=False)
 
-        # Carica dati esistenti se il file esiste
+        # Load existing data if file exists
         try:
             with open(self._tag_file_path, 'r') as file:
                 tag_file_content = json.load(file)

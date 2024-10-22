@@ -3,7 +3,7 @@ from streamlit_option_menu import option_menu
 from tools import Comparator, StrategyPro, Parameters, Report_Manager, Symbol_Manager, Folio_Manager
 
 try:
-    st.set_page_config(layout="wide", page_title="StrategyPro", page_icon="logo_bordo.png")
+    st.set_page_config(layout="wide", page_title="StrategyPro")
 except:
     print("Error")
     

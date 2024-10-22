@@ -9,7 +9,7 @@ from scipy.stats import norm
 from itertools import combinations
 
 
-############# GRAFICI PER COMPARATOR ################
+############# COMPARATOR ################
 def compare_one_metric_reports(data_list, metric):
     fig = px.bar(data_list, y=metric, text=metric, color=metric, color_continuous_scale='RdYlGn')
     fig.update_traces(textposition='outside')
@@ -20,7 +20,7 @@ def fig2_scatter(data_list, metric_one, metric_two):
     fig = px.scatter(data_list, x=metric_one, y=metric_two, 
         color=metric_one, color_continuous_scale='RdYlGn', 
         hover_name=data_list.index, text=data_list.index)
-    fig.update_traces(textposition='top center')  # Aggiungi questa riga
+    fig.update_traces(textposition='top center')  
     fig.update_layout(xaxis_title=metric_one, yaxis_title=metric_two) 
     return fig
 
@@ -94,26 +94,22 @@ def gen_equityDrawdown(df, equity, drawdown, drawdownperc):
     return fig
 
 
-### EQUITY LINE SINGOLE X PORTFOLIO
+### EQUITY LINE SINGLE X PORTFOLIO
 def create_equity_line_plot(df_equity, titolo, yTitolo):
     if isinstance(df_equity, pd.DataFrame):
         if len(df_equity.columns) == 0:
-            # Se ci è solo una colonna in un DataFrame, crea un semplice grafico a linea
             col_name = df_equity.columns[0]
             fig = go.Figure(data=go.Scatter(x=df_equity.index, y=df_equity[col_name], mode='lines', name=col_name))
         else:
-            # Se ci sono più colonne in un DataFrame, crea un grafico con tracce multiple
             traces = []
             for col in df_equity.columns:
                 traces.append(go.Scatter(x=df_equity.index, y=df_equity[col], mode='lines', name=col ))
             fig = go.Figure(data=traces)
     elif isinstance(df_equity, pd.Series):
-        # Se è un oggetto Series, crea un semplice grafico a linea
         fig = go.Figure(data=go.Scatter(x=df_equity.index, y=df_equity.values, mode='lines'))
     fig.update_layout(
         title= titolo,
         yaxis_title=yTitolo,
-        #hovermode='x',
         width=1400,
         height=800
     )
@@ -135,8 +131,6 @@ def create_equity_line_plot(df_equity, titolo, yTitolo):
     return fig
 
 
-
-# 1..12
 def portplussingol(str_dfEquity,tot_df, drawdownperc):
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[0.6, 0.3], vertical_spacing=0)
     for col in str_dfEquity.columns:
@@ -163,15 +157,11 @@ def portplussingol(str_dfEquity,tot_df, drawdownperc):
     return fig
 
 
-# 1.12
 def plot_drawdown_periods(df, drawdown_periods):
     fig = go.Figure()
-    # Aggiungi l'equity curve
     fig.add_trace(go.Scatter(x=df.index, y=df['Cumulative P/L'], mode='lines', name='Equity Curve', line=dict(color='blue')))
-    # Evidenzia i periodi di drawdown
     for start, end in drawdown_periods:
         diff_days = (end - start).days
-        # Aggiungi un'area riempita per il periodo di drawdown
         fig.add_trace(go.Scatter(
             x=[start, end, end, start, start],
             y=[df.loc[start, 'Cumulative P/L'], df.loc[end, 'Cumulative P/L'], 0, 0, df.loc[start, 'Cumulative P/L']],
@@ -182,17 +172,15 @@ def plot_drawdown_periods(df, drawdown_periods):
             text=f'Drawdown Period: {diff_days} days',
             showlegend=False
         ))
-    # Configura il layout del grafico
     fig.update_layout(
         yaxis_title='Cumulative P/L',
         showlegend=False,
         width=1400,
-        height=800
-    )
+        height=800)
     return fig
 
 
-### METRICHE GENERALI
+### GENERAL METRICS
 def metriche_general(st, netProfit, GrossWin, GrossLos, ProfitcFactor, avg, percProfit,
                            returnOnAccount, averageWin, averageLoss, numTrades, total_win_trades,
                            total_loss_trades, max_drawdown, max_drawdownPerc, duration, maxTradeLoss, dd_days):
@@ -235,7 +223,7 @@ def metriche_general(st, netProfit, GrossWin, GrossLos, ProfitcFactor, avg, perc
 
 
 
-### TAB METRICHE FINALI ULTIME
+### OTHER METRICS
 def metriche_finali(st, ritorni_settimanali, ritorni_mensili, ritorni_annuali,
                            twoMonthPos, newHigh, last_drawdown, actual_percentage):
     
@@ -259,7 +247,7 @@ def metriche_finali(st, ritorni_settimanali, ritorni_mensili, ritorni_annuali,
     st.write(":red[Actual drawdown on Max DD %: ]{:.2f}".format(actual_percentage))
 
 ##### TRADE ANALYSIS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# TRADE NEL TEMPO
+# TRADE IN TIME
 def tradeTime_graph(df):
     fig = go.Figure(data=[
     go.Bar(
@@ -307,7 +295,7 @@ def create_overTime(df, yColumn, titleGraph, titleXaxes, titleYaxes):
     fig.update_yaxes(title_text=titleYaxes)
     return fig
 
-### TABELLA RENDIMENTI MENSILI
+### MONTHLY RETURNS
 def rendimenti_mensili(df):
     monthly_returns = pd.pivot_table(df, values='Profit/Loss', index=df.index.year, columns=df.index.month, aggfunc='sum')  
     month_dict = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun', 7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Otc', 11: 'Nov', 12: 'Dec'}
@@ -315,7 +303,6 @@ def rendimenti_mensili(df):
     monthly_returns = monthly_returns.sort_index(ascending=False)
     monthly_returns['YTD'] = monthly_returns.sum(axis=1)  
     
-    # Funzione per colorare i mesi in base ai loro rendimenti
     def color_negative_red(val):
         color = 'red' if val < 0 else 'green'
         return 'color: %s' % color
@@ -335,7 +322,7 @@ def apply_corr_style(corrMatrix):
 
 
 ##### DISTRIBUTION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-### DISTRIBUZIONE NORMALE
+### NORMMAL DISTRIBUTION
 def plot_normal_distribution(mu, sigma, data, nameCol):
     x = np.linspace(mu - 3*sigma, mu + 3*sigma, 100)
     y = norm.pdf(x, mu, sigma)
@@ -345,7 +332,7 @@ def plot_normal_distribution(mu, sigma, data, nameCol):
     fig = go.Figure(data=[hist_trace, curve_trace], layout=layout)
     fig.update_layout(showlegend=False, width=1400, height=700)
     st.plotly_chart(fig, use_container_width=True)
-### DISTRIBUZIONE DOPPIA COLONNA
+### DISTRIBUTION DUBLE COLUMN
 def plot_distr_doppia(df1, col1, color1, df2, col2, color2):
     fig = go.Figure()
     fig.add_trace(go.Histogram(x=df1[col1], name=col1, marker_color=color1))
@@ -363,13 +350,11 @@ def plot_distr_doppia(df1, col1, color1, df2, col2, color2):
 
 ##### ASSET ALLOCATION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def plot_assAll(label, symbol, title):
-    # Crea il grafico a torta
     fig = go.Figure(data=[go.Pie(labels= label, values=symbol, showlegend=False)])
-    # Aggiungi il nome alle etichette del grafico
     fig.update_traces(textposition='inside', textinfo='label+percent')
     fig.update_layout(title_text=title, height=500, width=500)
     st.plotly_chart(fig,  use_container_width=True)
-### TABELLA GRAFICO ANNI
+### TAB GRAPH IN YEARS
 def grafico_annuali(annuali, long=None, short=None):
     fig = go.Figure()
     if long is not None and short is not None:
@@ -384,7 +369,7 @@ def grafico_annuali(annuali, long=None, short=None):
     title = 'Sum of Long/Short per year' if long is not None and short is not None else 'Sum of Profit/Loss per year'
     fig.update_layout(title=title, showlegend=False)
     st.plotly_chart(fig, use_container_width=True)
-### TABELLA GRAFICO MENSILE
+### TABLE GRAPHS MONTHLY
 def grafico_mensile(mensile, long=None, short=None):
     fig = go.Figure()
     if long is not None and short is not None:
@@ -398,7 +383,7 @@ def grafico_mensile(mensile, long=None, short=None):
 
     fig.update_layout(title='Monthly returns', showlegend=False)
     st.plotly_chart(fig, use_container_width=True)
-### GRAFICO SETTIMANALE
+### GRAPH WEEKLY
 def grafico_settimanale(settimanale, titolo, long=None, short=None):
     fig = go.Figure()
     if long is not None and short is not None:
@@ -411,7 +396,7 @@ def grafico_settimanale(settimanale, titolo, long=None, short=None):
                     marker_color=settimanale.apply(lambda x: 'green' if x>=0 else 'red')))
     fig.update_layout(title=titolo, showlegend=False)
     st.plotly_chart(fig, use_container_width=True)
-### GIORNI DEL MESE
+### DAY OF MONTH
 def grafico_ggMese(giornimese, titolo, long=None, short=None):
     fig = go.Figure()
     if long is not None and short is not None:
@@ -424,7 +409,7 @@ def grafico_ggMese(giornimese, titolo, long=None, short=None):
                                 marker=dict(color=['red' if val < 0 else 'green' for val in giornimese.values])))
     fig.update_layout(title=titolo, showlegend=False)
     st.plotly_chart(fig, use_container_width=True)
-### GRAFICO RITORNI ORARI
+### RETURN HOURLY
 def grafico_ritorni_orari(ret_hou, titolo, long=None, short=None):
     fig = go.Figure()
     if long is not None and short is not None:
@@ -467,24 +452,11 @@ def plot_equity_control(df):
 
 
 ##### MONTE-CARLO >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-"""
 def plot_Montecarlo(cumulative_returns_transposed):
-    colors = ['rgb(0, 0, 255)'] * (len(cumulative_returns_transposed.columns) - 1)  # Colore unico per tutte le altre colonne
-    colors.append('rgb(255, 0, 0)')  # Colore vivace per la colonna "Equity"
-    fig = go.Figure()
-    fig.update_layout(height=800, showlegend=False)
-
-    for i, col in enumerate(cumulative_returns_transposed.columns):
-        fig.add_trace(go.Scatter(x=cumulative_returns_transposed.index, y=cumulative_returns_transposed[col],
-                                 mode='lines', name=col, line_shape='hv', line=dict(color=colors[i])))
-    
-"""
-def plot_Montecarlo(cumulative_returns_transposed):
-    # Scegli un valore adatto per il campionamento (ad esempio, ogni 10° punto dati)
     n = 10
     downsampled_data = cumulative_returns_transposed.iloc[::n]
-    colors = ['rgb(0, 0, 255)'] * (len(downsampled_data.columns) - 1)  # Colore unico per tutte le altre colonne
-    colors.append('rgb(255, 0, 0)')  # Colore vivace per la colonna "Equity"
+    colors = ['rgb(0, 0, 255)'] * (len(downsampled_data.columns) - 1) 
+    colors.append('rgb(255, 0, 0)') 
     fig = go.Figure()
     fig.update_layout(height=700, showlegend=False)
 
@@ -500,13 +472,10 @@ def plot_equity(historical_equity_curve, total_simulated_equity, percentile_5, p
     fig.add_trace(go.Scatter(x=list(range(len(historical_equity_curve))), y=historical_equity_curve, mode='lines', name='Historical Equity'))
     x_simulated = list(range(len(historical_equity_curve), len(historical_equity_curve) + num_future_trades))
     fig.add_trace(go.Scatter(x=x_simulated, y=total_simulated_equity, mode='lines', name='Simulated Equity'))
-    # Aggiungi i percentili
     fig.add_trace(go.Scatter(x=x_simulated, y=percentile_5, mode='lines', name='5° Percentile', line=dict(dash='dash')))
     fig.add_trace(go.Scatter(x=x_simulated, y=percentile_95, mode='lines', name='95° Percentile', line=dict(dash='dash')))
-    # Imposta le etichette degli assi
     fig.update_xaxes(title_text='Number of Operations', range=[0, len(historical_equity_curve) + num_future_trades])
     fig.update_yaxes(title_text='Equity')
-    # Imposta le dimensioni del grafico
     fig.update_layout(width=800, height=800)
     st.plotly_chart(fig, use_container_width=True)
 ##### <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
