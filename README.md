@@ -18,3 +18,18 @@ A very simple and functional manager, you will be able to enter the symbols betr
 <img width="402" alt="image" src="https://github.com/user-attachments/assets/477987d7-4aca-4074-a057-b79e9cc56db5">
 
 
+Comparator
+Do you have 100 strategies on Nasdaq, 50 on soybeans, 300 on equities and 400 on forex? How to choose the best one in the latest period that is overperforming? How to choose the best one only on equities? How to choose the best one between equity and forex in the last 2 months?
+Comparator will help you with just that, and it will do it with simplicity and speed..
+You will have an interactive table and charts that will help you in this arduous choice!
+
+<img width="1040" alt="image" src="https://github.com/user-attachments/assets/9b1439d3-d0ac-4eed-a073-916d13cc7cdc">
+
+
+StrategyPro
+The cornerstone of all software, select your strategies by markets, tags, names or performance, edit contracts, weightings and create your portfolio in the blink of an eye!
+Fast and extremely flexible it offers detailed analysis of your individual systems or entire portfolios, you can see correlations, returns, biases and so much more.. Try it, it's free!
+
+<img width="1052" alt="image" src="https://github.com/user-attachments/assets/90bc639f-aac2-4ae8-b36e-69ba20c0bde7">
+
+
