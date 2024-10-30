@@ -4,7 +4,7 @@ To start it, just use this simple command:
 
 > streamlit run main.py 
 
-EXPORT YOUR TRADES
+EXPORT YOUR TRADES:
 Here are the data you need to export in this order:
 
 EntryDate-Time - MM/DD/YYYY HH:mm:ss
