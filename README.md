@@ -4,28 +4,24 @@ To start it, just use this simple command:
 
 > streamlit run main.py 
 
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 EXPORT YOUR TRADES
 Here are the data you need to export in this order:
 
-  EntryDate-Time - MM/DD/YYYY HH:mm:ss
-  EntryPrice - Strategy entry price
-  ExitDate-Time - MM/DD/YYYY HH:mm:ss
-  ExitPrice - Strategy exit price
-  SymbolName - Traded symbol name
-  MarketPosition - 1 for Long position, -1 for Short position
-  Max Contracts - Number of contracts/shares traded
-  Profit/Loss - Profit or loss of trade
-  MaxPositionProfit - Maximum profit achieved in position
-  MaxPositionLoss - Maximum loss achieved in position
+EntryDate-Time - MM/DD/YYYY HH:mm:ss
+EntryPrice - Strategy entry price
+ExitDate-Time - MM/DD/YYYY HH:mm:ss
+ExitPrice - Strategy exit price
+SymbolName - Traded symbol name
+MarketPosition - 1 for Long position, -1 for Short position
+Max Contracts - Number of contracts/shares traded
+Profit/Loss - Profit or loss of trade
+MaxPositionProfit - Maximum profit achieved in position
+MaxPositionLoss - Maximum loss achieved in position
 
 The file should contain these data in a single column,each data element must be separated by the comma.
 The result you should get is as follows:
 
 ![risultato](https://github.com/user-attachments/assets/1a7bec39-d248-44fb-9c8c-54d7c9dd9968)
-
-
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 
