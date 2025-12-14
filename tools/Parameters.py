@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
@@ -14,18 +15,29 @@ def app():
     df = pd.DataFrame()
     
     file_list = []
+    default_file = "opt_report.txt"
     uploaded_file = st.file_uploader(label = "Select or drag one or more files to upload",
                                         accept_multiple_files = True, type = ["txt"])
     if uploaded_file:
         for file in uploaded_file:
             file_list.append(file.name)
+
+    if os.path.exists(default_file) and default_file not in file_list:
+        file_list.insert(0, default_file)
+
     selected_file = st.selectbox("Select optimization report", file_list)
     if selected_file:
         try:
-            for file in uploaded_file:
-                if file.name == selected_file:
-                    df = pd.read_csv(file, encoding="utf-16", sep='\t')
-                    break
+            read_done = False
+            if uploaded_file:
+                for file in uploaded_file:
+                    if file.name == selected_file:
+                        df = pd.read_csv(file, encoding="utf-16", sep='\t')
+                        read_done = True
+                        break
+            
+            if not read_done and selected_file == default_file:
+                df = pd.read_csv(default_file, encoding="utf-16", sep='\t')
         except:
                 st.error("Sorry, something went wrong") 
                 st.stop() 
